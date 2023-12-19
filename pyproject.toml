@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "gemusaba"
+version = "0.1.0"
+description = ""
+authors = ["Phawit Pornwattanakul <me@helloyeew.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.0"
+python-decouple = "^3.8"
+django-admin-interface = "^0.27.0"
+django-crispy-forms = "^2.1"
+crispy-bootstrap5 = "^2023.10"
+gunicorn = "^21.2.0"
+djangorestframework = "^3.14.0"
+psycopg2-binary = "^2.9.9"
+sentry-sdk = {extras = ["django"], version = "^1.38.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
