@@ -1,5 +1,5 @@
 🌱 EndangerEd Project
-- Knowledge Base : Shīdo ([juump](https://github.com/endangered-project/shido))
+- Knowledge Base : Shīdo ([jump](https://github.com/endangered-project/shido))
 - Game Server : Gameserver (You are here!)
 - Game Client : __Coming Soon__
 
