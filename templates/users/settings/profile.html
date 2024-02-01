@@ -1,0 +1,37 @@
+{% extends "apps/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Settings{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Settings
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Settings</h1>
+    <p></p>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group list-group-flush">
+                <a href="{% url 'users_settings_profile' %}" role="button" class="list-group-item list-group-item-action active"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 14px"></i> Profile</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

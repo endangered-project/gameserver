@@ -6,7 +6,7 @@ authors = ["Phawit Pornwattanakul <me@helloyeew.dev>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 django = "^5.0"
 python-decouple = "^3.8"
 django-admin-interface = "^0.27.0"
@@ -16,6 +16,7 @@ gunicorn = "^21.2.0"
 djangorestframework = "^3.14.0"
 psycopg2-binary = "^2.9.9"
 sentry-sdk = {extras = ["django"], version = "^1.38.0"}
+drf-yasg = "^1.21.7"
 
 
 [build-system]

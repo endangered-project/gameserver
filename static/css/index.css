@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Noto+Sans+JP:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
+
+* {
+    --gemusaba-background: #1f2a24;
+    --gemusaba-background-rgb: 31, 42, 36;
+    --gemusaba-background-darker: #2a6c4b;
+    --gemusaba-background-darker-rgb: 42, 108, 75;
+    --gemusaba-border: #2a6c4e;
+    --gemusaba-border-rgb: 42, 108, 78;
+    --gemusaba-disabled: #43a16c;
+    --gemusaba-disabled-rgb: 67, 161, 108;
+    --gemusaba-primary: #7ebb94;
+    --gemusaba-primary-rgb: 126, 187, 148;
+    --gemusaba-hover: #b0f6c6;
+    --gemusaba-hover-rgb: 176, 246, 198;
+    --gemusaba-text: #ffffff;
+    --gemusaba-text-rgb: 255, 255, 255;
+    --gemusaba-translucent: rgba(191, 213, 201, 0.17);
+
+    --bs-body-bg: var(--gemusaba-background);
+    --bs-body-bg-rgb: var(--gemusaba-background-rgb);
+    --bs-body-color: var(--gemusaba-text);
+    --bs-body-color-rgb: var(--gemusaba-text-rgb);
+    --bs-tertiary-bg: var(--gemusaba-background-darker);
+    --bs-tertiary-bg-rgb: var(--gemusaba-background-darker-rgb);
+    --bs-border-width: 1px;
+    --bs-border-color-translucent: var(--gemusaba-translucent);
+
+
+    font-family: 'DM Sans', 'Noto Sans Thai', 'Noto Sans JP', sans-serif;
+
+    transition: all .2s!important;
+}
+
+body {
+    background-color: var(--gemusaba-background);
+}
+
+::selection {
+    color: var(--gemusaba-background);
+    background: rgba(var(--gemusaba-primary-rgb), 0.7);
+}
+
+::placeholder {
+    color: var(--gemusaba-disabled)!important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--gemusaba-primary);
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--gemusaba-primary);
+    --bs-btn-border-color: var(--gemusaba-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--gemusaba-hover);
+    --bs-btn-hover-border-color: var(--gemusaba-hover);
+    --bs-btn-focus-shadow-rgb: var(--gemusaba-hover-rgb);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--gemusaba-hover);
+    --bs-btn-active-border-color: var(--gemusaba-hover);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--gemusaba-disabled);
+    --bs-btn-disabled-border-color: var(--gemusaba-disabled);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--gemusaba-primary);
+    --bs-btn-border-color: var(--gemusaba-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--gemusaba-hover);
+    --bs-btn-hover-border-color: var(--gemusaba-hover);
+    --bs-btn-focus-shadow-rgb: var(--gemusaba-hover-rgb);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--gemusaba-hover);
+    --bs-btn-active-border-color: var(--gemusaba-hover);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--gemusaba-disabled);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--gemusaba-hover);
+    --bs-gradient: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--gemusaba-hover);
+    filter: brightness(85%);
+    transition: all .2s;
+    box-shadow: 0 0 15px var(--gemusaba-hover);
+}
+
+.btn-primary:focus {
+    outline: none;
+    background-color: var(--gemusaba-hover);
+    filter: brightness(85%);
+}
+
+a {
+    color: var(--gemusaba-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--gemusaba-hover);
+}
+
+.breadcrumb-item.active {
+    color: var(--gemusaba-text);
+}
+
+.form-control {
+    color: var(--bs-body-color);
+    background-color: var(--gemusaba-background);
+    border: var(--bs-border-width) solid var(--gemusaba-border);
+}
+
+.form-control:focus {
+    color: var(--bs-body-color);
+    background-color: var(--gemusaba-background);
+    border-color: var(--gemusaba-border);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(var(--gemusaba-border-rgb), 0.5);
+}
+
+.form-text {
+    color: var(--gemusaba-text);
+}
+
+.dropdown-menu {
+    --bs-dropdown-bg: var(--gemusaba-background);
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-bg: var(--bs-tertiary-bg);
+    --bs-dropdown-link-active-color: var(--gemusaba-background);
+    --bs-dropdown-link-active-bg: var(--gemusaba-disabled);
+    --bs-dropdown-link-disabled-color: #adb5bd;
+    --bs-dropdown-header-color: var(--gemusaba-primary);
+}
+
+.badge-gemusaba {
+    color: var(--gemusaba-background);
+    background-color: var(--gemusaba-hover);
+}
+
+.navbar-brand {
+    color: var(--gemusaba-text);
+}
+
+.navbar-brand:hover {
+    color: var(--gemusaba-hover);
+}
+
+.nav-link {
+    color: var(--gemusaba-text);
+}
+
+.nav-link.show {
+    color: var(--gemusaba-text);
+}
+
+.nav-link:hover {
+    color: var(--gemusaba-hover);
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: var(--gemusaba-background);
+    background-color: var(--gemusaba-hover);
+}
+
+.nav-pills .nav-link.active:focus, .nav-pills .show>.nav-link:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--gemusaba-hover-rgb), 0.5);
+}
+
+.nav-pills .nav-link.active:hover, .nav-pills .show>.nav-link:hover {
+    color: var(--gemusaba-background);
+    background-color: var(--gemusaba-hover);
+}
+
+.list-group-item.active {
+    color: var(--gemusaba-background);
+    background-color: var(--gemusaba-hover);
+    border-color: var(--gemusaba-hover);
+}
+
+.nav-item:hover {
+    background: rgba(var(--gemusaba-hover-rgb), 0.25);
+    border-radius: 0.25rem;
+}
+
+.header-title {
+    font-size: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+/*Card Element*/
+
+.element-card-background {
+    background-color: var(--gemusaba-primary);
+    width: 100%;
+    height: 100%;
+}
+
+.element-card-body {
+    background-color: rgba(var(--gemusaba-background-darker-rgb), 0.8);
+    border: 1px solid var(--gemusaba-border);
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-left: 0!important;
+    margin-right: 0!important;
+}
+
+@media (max-width: 766px) {
+    .element-card-wrapper {
+        margin-bottom: 1rem;
+    }
+}
+
+.bg-primary {
+    background-color: var(--gemusaba-primary) !important;
+}
+
+.card {
+    border: 1px solid var(--gemusaba-border);
+    border-radius: 0.25rem;
+}

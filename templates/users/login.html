@@ -1,0 +1,35 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block style %}
+<style>
+    @media only screen and (max-width: 768px) {
+        #background-container {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="row" style="height: 100vh">
+        <div class="col" style="display: flex; justify-content: center; align-items: center;" id="content-container">
+            <div style="width: 40%;">
+                <h1>Login</h1>
+                <h4></h4>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+                <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            </div>
+        </div>
+        <div class="col" style="background-image: url('{% static 'img/login.jpg' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;" id="background-container">
+            <p style="position: absolute; bottom: 0; right: 0; padding: 1rem;">Art by <a href="https://www.pixiv.net/en/users/143452">r_chitose</a> on <a href="https://www.pixiv.net/en/artworks/56149210">Pixiv</a>
+        </div>
+    </div>
+{% endblock %}
