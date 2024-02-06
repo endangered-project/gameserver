@@ -1,0 +1,117 @@
+{% extends "apps/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create a new question{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Create a new question
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Create a new question</h1>
+    <p></p>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <button class="btn btn-primary" type="submit" id="submit-button">Submit</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const knowledgeBaseUrl = "{{ knowledge_base_url }}";
+    const mainClassDropdown = document.getElementById("id_main_class_id");
+    const answerPropertyDropdown = document.getElementById("id_answer_property_id");
+    const questionHelpText = document.getElementById("id_question_helptext");
+    const questionTextBox = document.getElementById("id_question");
+    const submitButton = document.getElementById("submit-button");
+
+    const defaultHelpText = "Question template that will be rendered, use {property_name} to use the property";
+
+    function updateClassDropdown() {
+        fetch(`${knowledgeBaseUrl}/api/class`, {
+            method: "GET",
+            cache: 'no-store',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                mainClassDropdown.innerHTML = "";
+                data = data["class"]
+                data.forEach(mainClass => {
+                    const option = document.createElement("option");
+                    option.value = mainClass.id;
+                    option.text = mainClass.name;
+                    mainClassDropdown.appendChild(option);
+                });
+                updateAnswerPropertyDropdown();
+            });
+    }
+
+    function updateAnswerPropertyDropdown() {
+        fetch(`${knowledgeBaseUrl}/api/property_type?class=${mainClassDropdown.value}`, {
+            method: "GET",
+            cache: 'no-store',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                answerPropertyDropdown.innerHTML = "";
+                data = data["property_type"]
+                data.forEach(questionProperty => {
+                    const option = document.createElement("option");
+                    option.value = questionProperty.id;
+                    option.text = questionProperty.name;
+                    answerPropertyDropdown.appendChild(option);
+                });
+                questionHelpText.innerHTML = defaultHelpText + "<br>Avaliable properties: " + data.map(property => `{${property.name}}`).join(", ");
+            });
+    }
+    
+    function updateWarning() {
+        // add warning if question contain property that is not in the property list or in the answer dropdown
+        questionHelpText.innerHTML = defaultHelpText + "<br>Avaliable properties: " + Array.from(answerPropertyDropdown.options).map(option => `{${option.text}}`).join(", ");
+        const question = questionTextBox.value;
+        const properties = question.match(/{[a-zA-Z0-9_]+}/g);
+        if (properties) {
+            properties.forEach(property => {
+                if (!Array.from(answerPropertyDropdown.options).map(option => `{${option.text}}`).includes(property)) {
+                    questionHelpText.innerHTML +="<br><span style='color: red;'>Warning: property " + property + " is not in the property list</span>";
+                }
+            });
+            const selectedProperty = answerPropertyDropdown.options[answerPropertyDropdown.selectedIndex].text;
+            if (question.includes(`{${selectedProperty}}`)) {
+                questionHelpText.innerHTML += "<br><span style='color: yellow;'>Warning: property {" + selectedProperty + "} that's now select as answer property is exist in the question</span>";
+            }
+        } else {
+            questionHelpText.innerHTML = defaultHelpText + "<br>Avaliable properties: " + Array.from(answerPropertyDropdown.options).map(option => `{${option.text}}`).join(", ");
+        }
+    }
+
+    mainClassDropdown.addEventListener("change",() => {
+        updateAnswerPropertyDropdown()
+        updateWarning()
+    });
+    
+    answerPropertyDropdown.addEventListener("change", () => {
+        updateWarning()
+    });
+
+    questionTextBox.addEventListener("input", () => {
+        updateWarning()
+    });
+
+    updateClassDropdown();
+    updateWarning()
+</script>
+{% endblock %}

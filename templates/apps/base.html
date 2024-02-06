@@ -56,6 +56,12 @@
                     <div class="list-group list-group-flush">
                         <a href="{% url 'apps_home' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-home" aria-hidden="true" style="font-size: 14px"></i> Home</a>
                     </div>
+                    {% if user.is_staff %}
+                    <p></p>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'apps_question_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-comment-question" aria-hidden="true" style="font-size: 14px"></i> Question</a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -101,7 +107,7 @@
             {% endif %}
         </div>
 
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
             {% if messages %}
                 <div class="toast" id="messages" role="status" aria-live="polite" aria-atomic="true" style="transition: all .2s" data-bs-delay="3000">
                     <div class="toast-body">

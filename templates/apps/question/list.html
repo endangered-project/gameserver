@@ -1,0 +1,30 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Question List{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Question List
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Question List</h1>
+    <a href="{% url 'apps_question_create' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Create</a>
+    <p></p>
+    <div>
+        <ul>
+            {% for question in questions %}
+            <li>{{ question }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
