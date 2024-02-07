@@ -1,0 +1,45 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Game Mode List{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Game Mode List
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Question List</h1>
+    <a href="{% url 'apps_game_mode_create' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Create</a>
+    <p></p>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Answer mode</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mode in game_modes %}
+            <tr>
+                <td scope="row">{{ mode.id }}</td>
+                <td>{{ mode.name }}</td>
+                <td>{{ mode.answer_mode }}</td>
+                <td>
+                    <a href="{% url 'apps_game_mode_edit' mode.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

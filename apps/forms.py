@@ -61,3 +61,37 @@ class QuestionModelForm(forms.Form):
         print(all_property_name)
         if answer_property_id not in all_property_id:
             self.add_error('answer_property_id', 'Answer property is not exist')
+
+
+class GameModeForm(forms.Form):
+    name = forms.CharField(
+        label='Name',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Name of game mode',
+        required=True
+    )
+
+    answer_mode = forms.CharField(
+        label='Answer Mode',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            },
+            choices=(
+                ('single_right', 'Single (1 right answer, others are wrong)'),
+                ('single_wrong', 'Single (1 wrong answer, others are right)'),
+                ('multiple', 'Multiple'),
+                ('text', 'Text')
+            )
+        ),
+        help_text='Answer mode of game mode',
+        required=True
+    )
+
+    class Meta:
+        model = QuestionModel
+        fields = '__all__'
