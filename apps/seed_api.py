@@ -45,3 +45,17 @@ def get_property_type_from_class(class_id):
     if response.status_code != 200:
         raise Exception(f'Error when getting property type from class. Status code: {response.status_code}')
     return response.json()['property_type']
+
+
+def get_instance_from_class(class_id):
+    """
+    Get instance from class
+    API endpoint : /api/instance?class={class_id}
+    :param class_id: ID of class
+    :return: Instance list in JSON format
+    """
+    url = f'{KNOWLEDGE_BASE_URL}/api/instance?class={class_id}'
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f'Error when getting instance from class. Status code: {response.status_code}')
+    return response.json()['instance']

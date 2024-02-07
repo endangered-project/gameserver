@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 
 from apps.forms import QuestionModelForm, GameModeForm
 from apps.models import QuestionModel, GameMode
+from apps.question import generate_question
 
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
 if KNOWLEDGE_BASE_URL[-1] == '/':
@@ -118,4 +119,19 @@ def game_mode_edit(request, game_mode_id):
     return render(request, 'apps/game_mode/edit.html', {
         'form': form,
         'game_mode': game_mode
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def question_generator_test(request):
+    try:
+        question = generate_question()
+        exception_message = None
+    except Exception as e:
+        question = None
+        exception_message = str(e)
+    return render(request, 'apps/question_generator_test.html', {
+        "question": question,
+        "exception_message": exception_message
     })

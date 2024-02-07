@@ -1,0 +1,34 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Question Generator Test{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Question Generator Test
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Question Generator Test</h1>
+    <p></p>
+    {% if question %}
+        <p>Game mode : {{ question.game_mode.name }} ({{ question.game_mode.answer_mode }})</p>
+        
+        <p>Question : {{ question.rendered_question }}</p>
+        <p>Choices : {{ question.choices }}</p>
+        <p>Answer : {{ question.answer }}</p>
+        
+        <p>Answer type : {{ question.type }}</p>
+    {% endif %}
+    {% if exception_message %}
+        <p style="color: red;">{{ exception_message }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

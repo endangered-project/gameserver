@@ -83,8 +83,6 @@ class GameModeForm(forms.Form):
             },
             choices=(
                 ('single_right', 'Single (1 right answer, others are wrong)'),
-                ('single_wrong', 'Single (1 wrong answer, others are right)'),
-                ('multiple', 'Multiple'),
                 ('text', 'Text')
             )
         ),
