@@ -225,3 +225,13 @@ a:hover {
     border: 1px solid var(--gemusaba-border);
     border-radius: 0.25rem;
 }
+
+th, td {
+    color: var(--gemusaba-text)!important;
+}
+
+.form-control:disabled {
+    background-color: var(--gemusaba-background);
+    color: var(--gemusaba-disabled);
+    opacity: 0.5;
+}

@@ -1,7 +1,7 @@
 {% extends "apps/base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Create a new question{% endblock %}
+{% block title %}Edit question{% endblock %}
 
 {% block styles %}
 
@@ -9,12 +9,12 @@
 
 {% block header %}
     <p class="header-title">
-        Create a new question
+        Edit question
     </p>
 {% endblock %}
 
 {% block content %}
-    <h1 style="padding-top: 1rem;">Create a new question</h1>
+    <h1 style="padding-top: 1rem;">Edit question</h1>
     <p></p>
     <div style="height: .5rem; margin-bottom: .75rem; margin-top: .25rem;">
         <div class="spinner-border text-light spinner-border-sm" role="status" id="loading-element" style="display: none;">
@@ -42,7 +42,7 @@
 
     function updateClassDropdown() {
         loadingElement.style.display = "block";
-        fetch(`${knowledgeBaseUrl}/api/class`, {
+        return fetch(`${knowledgeBaseUrl}/api/class`, {
             method: "GET",
             cache: 'no-store',
             headers: {
@@ -66,7 +66,7 @@
 
     function updateAnswerPropertyDropdown() {
         loadingElement.style.display = "block";
-        fetch(`${knowledgeBaseUrl}/api/property_type?class=${mainClassDropdown.value}`, {
+        return fetch(`${knowledgeBaseUrl}/api/property_type?class=${mainClassDropdown.value}`, {
             method: "GET",
             cache: 'no-store',
             headers: {
@@ -120,8 +120,23 @@
     questionTextBox.addEventListener("input", () => {
         updateWarning()
     });
+    
+    mainClassDropdown.disabled = true;
+    questionTextBox.disabled = true;
+    answerPropertyDropdown.disabled = true;
+    submitButton.disabled = true;
+    loadingElement.style.display = "block";
 
-    updateClassDropdown();
-    updateWarning()
+    updateClassDropdown().then(() => {
+        mainClassDropdown.value = "{{ question.main_class_id }}";
+        updateAnswerPropertyDropdown().then(() => {
+            answerPropertyDropdown.value = "{{ question.answer_property_id }}";
+        });
+        mainClassDropdown.disabled = false;
+        questionTextBox.disabled = false;
+        answerPropertyDropdown.disabled = false;
+        submitButton.disabled = false;
+        loadingElement.style.display = "none";
+    });
 </script>
 {% endblock %}

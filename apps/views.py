@@ -43,3 +43,28 @@ def question_create(request):
         'form': form,
         'knowledge_base_url': KNOWLEDGE_BASE_URL
     })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def question_edit(request, question_id):
+    question = QuestionModel.objects.get(pk=question_id)
+    if request.method == 'POST':
+        form = QuestionModelForm(request.POST)
+        if form.is_valid():
+            question.main_class_id = form.cleaned_data['main_class_id']
+            question.question = form.cleaned_data['question']
+            question.answer_property_id = form.cleaned_data['answer_property_id']
+            messages.success(request, 'Question updated successfully')
+            return redirect('apps_question_list')
+    else:
+        form = QuestionModelForm(initial={
+            'main_class_id': question.main_class_id,
+            'question': question.question,
+            'answer_property_id': question.answer_property_id
+        })
+    return render(request, 'apps/question/edit.html', {
+        'form': form,
+        'knowledge_base_url': KNOWLEDGE_BASE_URL,
+        'question': question
+    })
