@@ -16,7 +16,8 @@
     <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Question Generator Test</h1>
     <p></p>
     {% if question %}
-        <p>Game mode : {{ question.game_mode.name }} ({{ question.game_mode.answer_mode }})</p>
+        <p>Game mode : {{ question.game_mode.name }}</p>
+        <p>Answer mode : {{ question.question.answer_mode }}</p>
         
         <p>Question : {{ question.rendered_question }}</p>
         <p>Choices : {{ question.choices }}</p>

@@ -1,10 +1,16 @@
 from django.db import models
 
+ANSWER_MODE_CHOICES = (
+    ('single_right', 'Single (1 right answer, others are wrong)'),
+    ('text', 'Text (User input text)')
+)
+
 
 class QuestionModel(models.Model):
     main_class_id = models.IntegerField()
     question = models.TextField()
     answer_property_id = models.IntegerField()
+    answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
 
     def __str__(self):
         return self.question
@@ -17,7 +23,8 @@ class QuestionModel(models.Model):
 
 class GameMode(models.Model):
     name = models.CharField(max_length=100)
-    answer_mode = models.CharField(max_length=100)
+    # multiple choice
+    allow_answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
 
     def __str__(self):
         return self.name

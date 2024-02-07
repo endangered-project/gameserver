@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.models import QuestionModel
+from apps.models import QuestionModel, ANSWER_MODE_CHOICES
 from apps.seed_api import get_all_class, get_property_type_from_class
 
 
@@ -32,6 +32,17 @@ class QuestionModelForm(forms.Form):
             }
         ),
         help_text='Property that will be used to render the choices in the question'
+    )
+    answer_mode = forms.CharField(
+        label='Answer Mode',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            },
+            choices=ANSWER_MODE_CHOICES
+        ),
+        help_text='Answer mode of this question, this will be used to render the choices',
+        required=True
     )
 
     class Meta:
@@ -74,19 +85,15 @@ class GameModeForm(forms.Form):
         help_text='Name of game mode',
         required=True
     )
-
-    answer_mode = forms.CharField(
-        label='Answer Mode',
-        widget=forms.Select(
+    allow_answer_mode = forms.CharField(
+        label='Allow Answer Mode',
+        widget=forms.SelectMultiple(
             attrs={
                 'class': 'form-control'
             },
-            choices=(
-                ('single_right', 'Single (1 right answer, others are wrong)'),
-                ('text', 'Text')
-            )
+            choices=ANSWER_MODE_CHOICES
         ),
-        help_text='Answer mode of game mode',
+        help_text='Answer mode that allowed in this game mode',
         required=True
     )
 

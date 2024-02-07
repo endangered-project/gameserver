@@ -21,7 +21,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Answer mode</th>
+                <th>Allow answer mode</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -30,7 +30,7 @@
             <tr>
                 <td scope="row">{{ mode.id }}</td>
                 <td>{{ mode.name }}</td>
-                <td>{{ mode.answer_mode }}</td>
+                <td>{{ mode.allow_answer_mode }}</td>
                 <td>
                     <a href="{% url 'apps_game_mode_edit' mode.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
                 </td>

@@ -1,3 +1,5 @@
+import logging
+
 from decouple import config
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -10,6 +12,8 @@ from apps.question import generate_question
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
 if KNOWLEDGE_BASE_URL[-1] == '/':
     KNOWLEDGE_BASE_URL = KNOWLEDGE_BASE_URL[:-1]
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -34,7 +38,8 @@ def question_create(request):
             QuestionModel.objects.create(
                 main_class_id=form.cleaned_data['main_class_id'],
                 question=form.cleaned_data['question'],
-                answer_property_id=form.cleaned_data['answer_property_id']
+                answer_property_id=form.cleaned_data['answer_property_id'],
+                answer_mode=form.cleaned_data['answer_mode']
             )
             messages.success(request, 'Question created successfully')
             return redirect('apps_question_list')
@@ -56,6 +61,7 @@ def question_edit(request, question_id):
             question.main_class_id = form.cleaned_data['main_class_id']
             question.question = form.cleaned_data['question']
             question.answer_property_id = form.cleaned_data['answer_property_id']
+            question.answer_mode = form.cleaned_data['answer_mode']
             question.save()
             messages.success(request, 'Question updated successfully')
             return redirect('apps_question_list')
@@ -88,7 +94,7 @@ def game_mode_create(request):
         if form.is_valid():
             GameMode.objects.create(
                 name=form.cleaned_data['name'],
-                answer_mode=form.cleaned_data['answer_mode']
+                allow_answer_mode=form.cleaned_data['allow_answer_mode']
             )
             messages.success(request, 'Game mode created successfully')
             return redirect('apps_game_mode_list')
@@ -107,14 +113,14 @@ def game_mode_edit(request, game_mode_id):
         form = GameModeForm(request.POST)
         if form.is_valid():
             game_mode.name = form.cleaned_data['name']
-            game_mode.answer_mode = form.cleaned_data['answer_mode']
+            game_mode.allow_answer_mode = form.cleaned_data['allow_answer_mode']
             game_mode.save()
             messages.success(request, 'Game mode updated successfully')
             return redirect('apps_game_mode_list')
     else:
         form = GameModeForm(initial={
             'name': game_mode.name,
-            'answer_mode': game_mode.answer_mode
+            'allow_answer_mode': game_mode.allow_answer_mode
         })
     return render(request, 'apps/game_mode/edit.html', {
         'form': form,
@@ -129,6 +135,7 @@ def question_generator_test(request):
         question = generate_question()
         exception_message = None
     except Exception as e:
+        logger.exception(e)
         question = None
         exception_message = str(e)
     return render(request, 'apps/question_generator_test.html', {
