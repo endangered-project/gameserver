@@ -87,7 +87,7 @@ class GameModeForm(forms.Form):
     )
     allow_answer_mode = forms.CharField(
         label='Allow Answer Mode',
-        widget=forms.SelectMultiple(
+        widget=forms.Select(
             attrs={
                 'class': 'form-control'
             },

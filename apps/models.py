@@ -23,7 +23,6 @@ class QuestionModel(models.Model):
 
 class GameMode(models.Model):
     name = models.CharField(max_length=100)
-    # multiple choice
     allow_answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
 
     def __str__(self):
