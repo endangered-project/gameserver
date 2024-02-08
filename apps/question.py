@@ -11,7 +11,7 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 10):
+def generate_question(choices: int = 4, try_count: int = 30):
     """
     Generate a question for the user to answer
     :param choices: Number of choices to generate
@@ -36,8 +36,12 @@ def generate_question(choices: int = 4, try_count: int = 10):
             elif question.answer_mode == "text":
                 return generate_text_question(question, game_mode)
 
-
         except FailedToGenerateQuestion as e:
+            logger.error(f"Failed to generate question: {e}")
+            logger.exception(e)
+            continue
+
+        except Exception as e:
             logger.error(f"Failed to generate question: {e}")
             logger.exception(e)
             continue
@@ -95,6 +99,8 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
         except StopIteration or KeyError:
             raise FailedToGenerateQuestion(
                 f"Failed to generate question, property ID {question.answer_property_id} not found")
+        except Exception as e:
+            raise FailedToGenerateQuestion(f"Failed to generate question, {e}")
 
     # append the answer to the choice in random position
     answer_property_value = next((pv for pv in question_instance['property_values'] if
