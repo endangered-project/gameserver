@@ -1,0 +1,69 @@
+{% extends "apps/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Staff Management{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Staff Management
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Staff Management</h1>
+    <p></p>
+    <a href="{% url 'users_manage_add' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Add</a>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Is Superuser</th>
+                <th scope="col">Active</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <th scope="row">{{ user.id }}</th>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                    {% if user.is_superuser %}
+                        <i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green"></i>
+                    {% else %}
+                        <i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red"></i>
+                    {% endif %}
+                    </td>
+                    <td>
+                    {% if user.is_active %}
+                        <i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green"></i>
+                    {% else %}
+                        <i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red"></i>
+                    {% endif %}
+                    <td>
+                        <a href="{% url 'users_manage_edit' user.id %}" class="btn btn-sm btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+                        <a href="{% url 'users_manage_disable' user.id %}" class="{% if user.is_active %}btn btn-sm btn-danger{% else %}btn btn-sm btn-success{% endif %}">
+                            {% if user.is_active %}
+                                <i class="mdi mdi-block-helper" aria-hidden="true" style="font-size: 20px"></i> Disable
+                            {% else %}
+                                <i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px"></i> Enable again
+                            {% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

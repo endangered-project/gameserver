@@ -24,3 +24,45 @@ class ProfileSettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['avatar']
+
+
+class CreateUserForm(UserCreationForm):
+    """Form for creating a new user."""
+    is_superuser = forms.BooleanField(
+        label='Create as superuser',
+        help_text='Check this if you want to create this user as superuser',
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2', 'is_superuser']
+
+    def save(self, commit=True):
+        user = super(CreateUserForm, self).save(commit=False)
+        user.is_staff = True
+        user.is_superuser = self.cleaned_data.get('is_superuser')
+        if commit:
+            user.save()
+        return user
+
+
+class EditUserForm(forms.ModelForm):
+    """Form for editing a user."""
+    is_superuser = forms.BooleanField(
+        label='Create as superuser',
+        help_text='Check this if you want to create this user as superuser',
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'is_superuser']
+
+    def save(self, commit=True):
+        user = super(EditUserForm, self).save(commit=False)
+        user.is_staff = True
+        user.is_superuser = self.cleaned_data.get('is_superuser')
+        if commit:
+            user.save()
+        return user
