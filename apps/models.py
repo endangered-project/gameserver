@@ -5,12 +5,27 @@ ANSWER_MODE_CHOICES = (
     ('text', 'Text (User input text)')
 )
 
+DIFFICULTY_LEVEL_CHOICES = (
+    ('easy', 'Easy'),
+    ('medium', 'Medium'),
+    ('hard', 'Hard')
+)
+
+
+class QuestionCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 
 class QuestionModel(models.Model):
     main_class_id = models.IntegerField()
     question = models.TextField()
     answer_property_id = models.IntegerField()
     answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
+    difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
+    category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.question

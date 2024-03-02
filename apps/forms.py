@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.models import QuestionModel, ANSWER_MODE_CHOICES
+from apps.models import QuestionModel, ANSWER_MODE_CHOICES, QuestionCategory
 from apps.seed_api import get_all_class, get_property_type_from_class
 
 
@@ -43,6 +43,32 @@ class QuestionModelForm(forms.Form):
         ),
         help_text='Answer mode of this question, this will be used to render the choices',
         required=True
+    )
+    difficulty_level = forms.CharField(
+        label='Difficulty Level',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            },
+            choices=[
+                ('easy', 'Easy'),
+                ('medium', 'Medium'),
+                ('hard', 'Hard')
+            ]
+        ),
+        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question',
+        required=True
+    )
+    category = forms.ModelChoiceField(
+        label='Category',
+        queryset=QuestionCategory.objects.all(),
+        initial=QuestionCategory.objects.get(name='Uncategorized'),
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Category of this question, this will be used to measure the weight of the question on selecting the question'
     )
 
     class Meta:

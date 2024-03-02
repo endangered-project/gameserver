@@ -39,7 +39,9 @@ def question_create(request):
                 main_class_id=form.cleaned_data['main_class_id'],
                 question=form.cleaned_data['question'],
                 answer_property_id=form.cleaned_data['answer_property_id'],
-                answer_mode=form.cleaned_data['answer_mode']
+                answer_mode=form.cleaned_data['answer_mode'],
+                difficulty_level=form.cleaned_data['difficulty_level'],
+                category=form.cleaned_data['category']
             )
             messages.success(request, 'Question created successfully')
             return redirect('apps_question_list')
@@ -62,6 +64,8 @@ def question_edit(request, question_id):
             question.question = form.cleaned_data['question']
             question.answer_property_id = form.cleaned_data['answer_property_id']
             question.answer_mode = form.cleaned_data['answer_mode']
+            question.difficulty_level = form.cleaned_data['difficulty_level']
+            question.category = form.cleaned_data['category']
             question.save()
             messages.success(request, 'Question updated successfully')
             return redirect('apps_question_list')
@@ -69,7 +73,10 @@ def question_edit(request, question_id):
         form = QuestionModelForm(initial={
             'main_class_id': question.main_class_id,
             'question': question.question,
-            'answer_property_id': question.answer_property_id
+            'answer_property_id': question.answer_property_id,
+            'answer_mode': question.answer_mode,
+            'difficulty_level': question.difficulty_level,
+            'category': question.category
         })
     return render(request, 'apps/question/edit.html', {
         'form': form,
