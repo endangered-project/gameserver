@@ -62,7 +62,6 @@ class QuestionModelForm(forms.Form):
     category = forms.ModelChoiceField(
         label='Category',
         queryset=QuestionCategory.objects.all(),
-        initial=QuestionCategory.objects.get(name='Uncategorized'),
         widget=forms.Select(
             attrs={
                 'class': 'form-control'
@@ -125,4 +124,30 @@ class GameModeForm(forms.Form):
 
     class Meta:
         model = QuestionModel
+        fields = '__all__'
+
+
+class QuestionCategoryForm(forms.ModelForm):
+    name = forms.CharField(
+        label='Name',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Name of the category'
+    )
+    description = forms.CharField(
+        label='Description',
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Description of the category',
+        required=False
+    )
+
+    class Meta:
+        model = QuestionCategory
         fields = '__all__'

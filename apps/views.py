@@ -5,8 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.shortcuts import render, redirect
 
-from apps.forms import QuestionModelForm, GameModeForm
-from apps.models import QuestionModel, GameMode
+from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm
+from apps.models import QuestionModel, GameMode, QuestionCategory
 from apps.question import generate_question
 
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
@@ -56,7 +56,11 @@ def question_create(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def question_edit(request, question_id):
-    question = QuestionModel.objects.get(pk=question_id)
+    try:
+        question = QuestionModel.objects.get(pk=question_id)
+    except QuestionModel.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_question_list')
     if request.method == 'POST':
         form = QuestionModelForm(request.POST)
         if form.is_valid():
@@ -115,7 +119,11 @@ def game_mode_create(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def game_mode_edit(request, game_mode_id):
-    game_mode = GameMode.objects.get(pk=game_mode_id)
+    try:
+        game_mode = GameMode.objects.get(pk=game_mode_id)
+    except GameMode.DoesNotExist:
+        messages.error(request, 'Game mode not found')
+        return redirect('apps_game_mode_list')
     if request.method == 'POST':
         form = GameModeForm(request.POST)
         if form.is_valid():
@@ -132,6 +140,50 @@ def game_mode_edit(request, game_mode_id):
     return render(request, 'apps/game_mode/edit.html', {
         'form': form,
         'game_mode': game_mode
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def question_category_list(request):
+    return render(request, 'apps/category/list.html', {
+        'categories': QuestionCategory.objects.all()
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def question_category_create(request):
+    if request.method == 'POST':
+        form = QuestionCategoryForm(request.POST)
+        form.save()
+        messages.success(request, 'Category created successfully')
+        return redirect('apps_question_category_list')
+    else:
+        form = QuestionCategoryForm()
+    return render(request, 'apps/category/create.html', {
+        'form': form
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def question_category_edit(request, category_id):
+    try:
+        category = QuestionCategory.objects.get(pk=category_id)
+    except QuestionCategory.DoesNotExist:
+        messages.error(request, 'Category not found')
+        return redirect('apps_question_category_list')
+    if request.method == 'POST':
+        form = QuestionCategoryForm(request.POST, instance=category)
+        form.save()
+        messages.success(request, 'Category updated successfully')
+        return redirect('apps_question_category_list')
+    else:
+        form = QuestionCategoryForm(instance=category)
+    return render(request, 'apps/category/edit.html', {
+        'form': form,
+        'category': category
     })
 
 
