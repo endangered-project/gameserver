@@ -49,7 +49,7 @@ def profile_settings(request):
 @user_passes_test(lambda u: u.is_superuser)
 def staff_management(request):
     users = User.objects.filter(is_staff=True).order_by('id')
-    return render(request, 'users/manage/list.html', {
+    return render(request, 'users/staff_manage/list.html', {
         'users': users
     })
 
@@ -62,10 +62,10 @@ def staff_management_add(request):
         if form.is_valid():
             form.save()
             messages.success(request, f'User added successfully!')
-            return redirect('users_manage')
+            return redirect('staff_manage')
     else:
         form = CreateUserForm()
-    return render(request, 'users/manage/add.html', {
+    return render(request, 'users/staff_manage/add.html', {
         'form': form
     })
 
@@ -79,10 +79,10 @@ def staff_management_edit(request, user_id):
         if form.is_valid():
             form.save()
             messages.success(request, f'User edited successfully!')
-            return redirect('users_manage')
+            return redirect('staff_manage')
     else:
         form = EditUserForm(instance=user)
-    return render(request, 'users/manage/edit.html', {
+    return render(request, 'users/staff_manage/edit.html', {
         'form': form,
         'current_user': user
     })
@@ -93,9 +93,27 @@ def staff_management_edit(request, user_id):
 def staff_management_disable(request, user_id):
     if request.user.id == user_id:
         messages.error(request, f'You cannot disable yourself!')
-        return redirect('users_manage')
+        return redirect('staff_manage')
     user = User.objects.get(id=user_id)
     user.is_active = not user.is_active
     user.save()
     messages.success(request, f'User disabled successfully!' if user.is_active else f'User enabled successfully!')
-    return redirect('users_manage')
+    return redirect('staff_manage')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def users_management(request):
+    users = User.objects.filter(is_staff=False).order_by('id')
+    return render(request, 'users/users_manage/list.html', {
+        'users': users
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def users_management_detail(request, user_id):
+    user = User.objects.get(id=user_id)
+    return render(request, 'users/users_manage/detail.html', {
+        'user_object': user
+    })
