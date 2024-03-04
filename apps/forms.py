@@ -74,6 +74,14 @@ class QuestionModelForm(forms.Form):
         model = QuestionModel
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super(QuestionModelForm, self).__init__(*args, **kwargs)
+        if 'category' not in self.initial:
+            try:
+                self.initial['category'] = QuestionCategory.objects.get(name='Uncategorized')
+            except QuestionCategory.DoesNotExist:
+                pass
+
     def clean(self):
         cleaned_data = super().clean()
         main_class_id = cleaned_data.get('main_class_id')
