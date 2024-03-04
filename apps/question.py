@@ -139,6 +139,7 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             "name": game_mode.name
         },
         "choices": choice_list,
+        "choices_type": choice_type,
         "answer": answer_raw_value,
         "type": choice_type
     }
@@ -194,6 +195,7 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
             "name": game_mode.name
         },
         "choices": choice_list,
+        "choices_type": choice_type,
         "answer": answer_property_value['raw_value'],
         "type": choice_type
     }
