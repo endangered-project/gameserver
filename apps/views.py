@@ -31,7 +31,6 @@ def question_list(request):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def question_create(request):
-    # TODO: make it editable
     if request.method == 'POST':
         form = QuestionModelForm(request.POST)
         if form.is_valid():
@@ -190,8 +189,12 @@ def question_category_edit(request, category_id):
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def question_generator_test(request):
+    id = request.GET.get('id')
     try:
-        question = generate_question()
+        if id:
+            question = generate_question(specific_question_id=id)
+        else:
+            question = generate_question()
         exception_message = None
     except Exception as e:
         logger.exception(e)

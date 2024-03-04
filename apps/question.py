@@ -2,7 +2,7 @@ import logging
 import random
 
 from apps.models import QuestionModel, GameMode
-from apps.seed_api import get_instance_from_class
+from apps.seed_api import get_instance_from_class, get_instance
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +11,10 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 30):
+def generate_question(choices: int = 4, try_count: int = 30, specific_question_id: int = None):
     """
     Generate a question for the user to answer
+    :param specific_question_id: Specific question ID to generate if want to generate specific question
     :param choices: Number of choices to generate
     :param try_count: Number of tries to generate question
     :return: Dict of question, choices, and answer
@@ -21,7 +22,13 @@ def generate_question(choices: int = 4, try_count: int = 30):
     for i in range(try_count):
         try:
             # random one question
-            question = QuestionModel.objects.order_by('?').first()
+            if specific_question_id:
+                try:
+                    question = QuestionModel.objects.get(pk=specific_question_id)
+                except QuestionModel.DoesNotExist:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+            else:
+                question = QuestionModel.objects.order_by('?').first()
             # random the game mode
             game_mode = GameMode.objects.order_by('?').first()
 
@@ -94,8 +101,14 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             choice_property_value = next((pv for pv in choice_instance['property_values'] if
                                           pv['property_type']['id'] == question.answer_property_id), None)
             choice_type = choice_property_value['property_type']['raw_type']
-            if choice_property_value['raw_value'] not in choice_list:
-                choice_list.append(choice_property_value['raw_value'])
+            if choice_type == "instance":
+                instance = get_instance(choice_property_value['raw_value'])
+                choice_list.append(instance["name"])
+            else:
+                if choice_property_value['raw_value'] not in choice_list:
+                    choice_list.append(choice_property_value['raw_value'])
+                else:
+                    continue
         except StopIteration or KeyError:
             raise FailedToGenerateQuestion(
                 f"Failed to generate question, property ID {question.answer_property_id} not found")
@@ -105,7 +118,12 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
     # append the answer to the choice in random position
     answer_property_value = next((pv for pv in question_instance['property_values'] if
                                   pv['property_type']['id'] == question.answer_property_id), None)
-    choice_list.insert(random.randint(0, len(choice_list)), answer_property_value['raw_value'])
+    if answer_property_value['property_type']['raw_type'] == "instance":
+        instance = get_instance(answer_property_value['raw_value'])
+        answer_raw_value = instance["name"]
+    else:
+        answer_raw_value = answer_property_value['raw_value']
+    choice_list.insert(random.randint(0, len(choice_list)), answer_raw_value)
 
     return {
         "question": {
@@ -121,7 +139,7 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             "name": game_mode.name
         },
         "choices": choice_list,
-        "answer": answer_property_value['raw_value'],
+        "answer": answer_raw_value,
         "type": choice_type
     }
 
@@ -158,7 +176,8 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
                 f"Failed to generate question, property {question_property} not found in instance")
 
     choice_list = []
-    answer_property_value = next((pv for pv in question_instance['property_values'] if pv['property_type']['id'] == question.answer_property_id), None)
+    answer_property_value = next((pv for pv in question_instance['property_values'] if
+                                  pv['property_type']['id'] == question.answer_property_id), None)
     choice_type = answer_property_value['property_type']['raw_type']
 
     return {
