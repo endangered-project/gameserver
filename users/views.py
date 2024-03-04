@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
+from apps.models import UserCategoryWeight
 from users.forms import UserCreationForms, ProfileSettingsForm, CreateUserForm, EditUserForm
 
 
@@ -114,6 +115,8 @@ def users_management(request):
 @user_passes_test(lambda u: u.is_superuser)
 def users_management_detail(request, user_id):
     user = User.objects.get(id=user_id)
+    question_weight = UserCategoryWeight.objects.filter(user=user)
     return render(request, 'users/users_manage/detail.html', {
-        'user_object': user
+        'user_object': user,
+        'question_weight': question_weight
     })

@@ -22,7 +22,27 @@
     </nav>
     <h1 style="padding-top: 1rem; padding-bottom: 1rem;">{{ user_object.username }}</h1>
     <p></p>
-    
+    <h2>Question Category Weight</h2>
+    {% if question_weight %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for weight in question_weight %}
+            <tr>
+                <th scope="row">{{ weight.category.name }}</th>
+                <td>{{ weight.weight }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No question category weight found</p>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 ANSWER_MODE_CHOICES = (
@@ -43,3 +44,12 @@ class GameMode(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserCategoryWeight(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(QuestionCategory, on_delete=models.CASCADE)
+    weight = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.user.username + ' - ' + self.category.name + '(' + str(self.weight) + ')'
