@@ -28,7 +28,7 @@
             {% for user in users %}
                 <tr>
                     <th scope="row">{{ user.id }}</th>
-                    <td>{{ user.username }}</td>
+                    <td>{{ user.username }} {% if user.is_staff %} <span class="badge text-bg-secondary">Admin</span> {% endif %}</td>
                     <td>
                         <a href="{% url 'users_management_detail' user.id %}" class="btn btn-sm btn-primary"><i class="mdi mdi-card-account-details" aria-hidden="true" style="font-size: 20px"></i> Detail</a>
                     </td>

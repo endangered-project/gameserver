@@ -104,7 +104,7 @@ def staff_management_disable(request, user_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def users_management(request):
-    users = User.objects.filter(is_staff=False).order_by('id')
+    users = User.objects.all().order_by('id')
     return render(request, 'users/users_manage/list.html', {
         'users': users
     })
