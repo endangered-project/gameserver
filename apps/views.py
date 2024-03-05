@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm
 from apps.models import QuestionModel, GameMode, QuestionCategory
 from apps.question import generate_question
+from apps.utils import create_all_weighted
 
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
 if KNOWLEDGE_BASE_URL[-1] == '/':
@@ -156,6 +157,7 @@ def question_category_create(request):
     if request.method == 'POST':
         form = QuestionCategoryForm(request.POST)
         form.save()
+        create_all_weighted()
         messages.success(request, 'Category created successfully')
         return redirect('apps_question_category_list')
     else:
