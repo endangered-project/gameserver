@@ -13,7 +13,7 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 30, specific_question_id: int = None, target_user: User = None):
+def generate_question(choices: int = 4, try_count: int = 50, specific_question_id: int = None, target_user: User = None):
     """
     Generate a question for the user to answer
     :param specific_question_id: Specific question ID to generate if want to generate specific question
