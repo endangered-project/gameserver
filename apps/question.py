@@ -1,7 +1,9 @@
 import logging
 import random
 
-from apps.models import QuestionModel, GameMode
+from django.contrib.auth.models import User
+
+from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight
 from apps.seed_api import get_instance_from_class, get_instance
 
 logger = logging.getLogger(__name__)
@@ -11,7 +13,7 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 30, specific_question_id: int = None):
+def generate_question(choices: int = 4, try_count: int = 30, specific_question_id: int = None, target_user: User = None):
     """
     Generate a question for the user to answer
     :param specific_question_id: Specific question ID to generate if want to generate specific question
@@ -21,6 +23,32 @@ def generate_question(choices: int = 4, try_count: int = 30, specific_question_i
     """
     for i in range(try_count):
         try:
+            # random category
+            category = QuestionCategory.objects.order_by('?').first()
+            if category is None:
+                raise FailedToGenerateQuestion("No category found")
+
+            # filter only question that have category in user's weight
+            # > 5.0 -> allow medium
+            # > 10.0 -> allow hard
+
+            if target_user:
+                try:
+                    weight = UserCategoryWeight.objects.get(user=target_user, category=category)
+                except UserCategoryWeight.DoesNotExist:
+                    weight = UserCategoryWeight.objects.create(user=target_user, category=category, weight=0.0)
+                weight = weight.weight
+            else:
+                # random 1-10 float
+                weight = random.uniform(0.0, 10.0)
+
+            if weight < 5.0:
+                difficulty_level = "easy"
+            elif weight < 10.0:
+                difficulty_level = "medium"
+            else:
+                difficulty_level = "hard"
+
             # random one question
             if specific_question_id:
                 try:
@@ -28,7 +56,9 @@ def generate_question(choices: int = 4, try_count: int = 30, specific_question_i
                 except QuestionModel.DoesNotExist:
                     raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
             else:
-                question = QuestionModel.objects.order_by('?').first()
+                all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level)
+                question = random.choice(all_question)
+
             # random the game mode
             game_mode = GameMode.objects.order_by('?').first()
 
@@ -141,7 +171,8 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
         "choices": choice_list,
         "choices_type": choice_type,
         "answer": answer_raw_value,
-        "type": choice_type
+        "type": choice_type,
+        "difficulty_level": question.difficulty_level
     }
 
 
@@ -197,5 +228,6 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
         "choices": choice_list,
         "choices_type": choice_type,
         "answer": answer_property_value['raw_value'],
-        "type": choice_type
+        "type": choice_type,
+        "difficulty_level": question.difficulty_level
     }
