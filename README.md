@@ -18,7 +18,7 @@ Gameserver keeps track of players' session, which is a period where a game is cu
 when a player starts the game, and lasts until it is over. When the latter happens, the client submits the total
 score to the server. The server then insert said score to the central scoreboard. In addition, the scoreboard data 
 can be requested by the client to be displayed to the player.
-####  Mediator for the Client and the Knowledge Base 
+#### 🙌 Mediator for the Client and the Knowledge Base 
 The server provides a microgame metadata when the client requests one, so that it
 can compose it into a playable experience. It does this by using of the knowledge base's API
 and its own RESTful API. The process happens during a game session and can be described as follows:
