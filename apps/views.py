@@ -1,3 +1,4 @@
+import json
 import logging
 
 from decouple import config
@@ -292,8 +293,8 @@ def image_custom_question_create(request):
                 image_choice.append(default_storage.url(f'custom_question/{image.name}'))
             ImageCustomQuestion.objects.create(
                 question=form.cleaned_data['question'],
-                choices=image_choice,
-                answer=default_storage.url(image_choice[cleaned_data['answer_len']]),
+                choices=json.dumps(image_choice),
+                answer=image_choice[cleaned_data['answer_len']],
                 category=form.cleaned_data['category']
             )
             messages.success(request, 'Question created successfully')
@@ -302,4 +303,55 @@ def image_custom_question_create(request):
         form = ImageCustomQuestionForm()
     return render(request, 'apps/image_custom_question/create.html', {
         'form': form
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def image_custom_question_edit(request, question_id):
+    try:
+        question = ImageCustomQuestion.objects.get(pk=question_id)
+    except ImageCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_image_custom_question_list')
+    if request.method == 'POST':
+        form = ImageCustomQuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            question.question = form.cleaned_data['question']
+            question.category = form.cleaned_data['category']
+            # save image from form (choices)
+            choices = []
+            for image in request.FILES.getlist('choices'):
+                default_storage.save(f'custom_question/{image.name}', image)
+                choices.append(default_storage.url(f'custom_question/{image.name}'))
+            question.choices = json.dumps(choices)
+            question.answer = default_storage.url(question.choices[cleaned_data['answer_len']])
+            question.save()
+            messages.success(request, 'Question updated successfully')
+            return redirect('apps_image_custom_question_list')
+    else:
+        form = ImageCustomQuestionForm(initial={
+            'question': question.question,
+            'category': question.category
+        })
+    return render(request, 'apps/image_custom_question/edit.html', {
+        'form': form,
+        'question': question
+    })
+
+
+# TODO: Add breadcrumb navigation
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def  image_custom_question_view(request, question_id):
+    try:
+        question = ImageCustomQuestion.objects.get(pk=question_id)
+    except ImageCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_image_custom_question_list')
+    return render(request, 'apps/image_custom_question/view.html', {
+        'question': question,
+        'choice_list': json.loads(question.choices)
     })

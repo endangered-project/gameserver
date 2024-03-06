@@ -35,7 +35,8 @@
                 <td>{{ question.difficulty_level }}</td>
                 <td>{{ question.category }}</td>
                 <td>
-                    <a href="#" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+                    <a href="{% url 'apps_image_custom_question_view' question.id %}" class="btn btn-primary"><i class="mdi mdi-eye" aria-hidden="true" style="font-size: 20px"></i> View</a>
+                    <a href="{% url 'apps_image_custom_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
                 </td>
             </tr>
             {% endfor %}

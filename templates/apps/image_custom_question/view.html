@@ -1,0 +1,35 @@
+{% extends "apps/base.html" %}
+
+{% block title %}View Image Custom Question{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        View Image Custom Question
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">View Image Custom Question</h1>
+    <a href="{% url 'apps_image_custom_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+    <p></p>
+    <h2>Question</h2>
+    <p>{{ question.question }}</p>
+    <h2>Category</h2>
+    <p>{{ question.category }}</p>
+    <h2>Choices</h2>
+    <div class="row g-3">
+        {% for choice in choice_list %}
+            <div class="col-md-4">
+                <img src="{{ choice }}" class="img-fluid {% if choice == question.answer %}border border-5 border-danger{% endif %}" alt="{{ choice }}">
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

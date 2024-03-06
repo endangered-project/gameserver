@@ -7,8 +7,22 @@ from apps.models import QuestionModel, ANSWER_MODE_CHOICES, QuestionCategory, Te
 from apps.seed_api import get_all_class, get_property_type_from_class
 
 
-class MultipleFileInput(forms.FileInput):
+class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
 
 
 class QuestionModelForm(forms.Form):
@@ -249,7 +263,7 @@ class ImageCustomQuestionForm(forms.Form):
         help_text='Question of this custom question'
     )
     # upload multiple images
-    choices = forms.FileField(
+    choices = MultipleFileField(
         label='Choices',
         widget=MultipleFileInput(
             attrs={
@@ -298,9 +312,7 @@ class ImageCustomQuestionForm(forms.Form):
         if answer.name not in [c.name for c in choices]:
             self.add_error('answer', 'Answer must be exist in choices')
             return
-        # Save len of answer in choices
-        cleaned_data['answer_len'] = len(choices)
+        # Save index of answer in choices
+        cleaned_data['answer_len'] = [c.name for c in choices].index(answer.name)
+        print(cleaned_data)
         return cleaned_data
-
-    def is_valid(self):
-        valid = super().is_valid()
