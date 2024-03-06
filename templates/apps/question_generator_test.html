@@ -15,6 +15,9 @@
 {% block content %}
     <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Question Generator Test</h1>
     <p></p>
+    <div style="margin-bottom: 1rem; padding: 8px; border-radius: 4px; background-color: var(--gemusaba-background-darker);">
+        Use <code>id</code> query parameter to specify the question id.
+    </div>
     {% if question %}
         <p>Game mode : {{ question.game_mode.name }}</p>
         <p>Answer mode : {{ question.question.answer_mode }}</p>
@@ -24,6 +27,11 @@
         <p>Answer : {{ question.answer }}</p>
         
         <p>Answer type : {{ question.type }}</p>
+        <p>Choices Type : {{ question.choices_type }}</p>
+        
+        <p>Difficulty : {{ question.difficulty_level }}</p>
+
+        <p>Raw : {{ question }}</p>
     {% endif %}
     {% if exception_message %}
         <p style="color: red;">{{ exception_message }}</p>

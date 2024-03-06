@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 ANSWER_MODE_CHOICES = (
@@ -5,12 +6,28 @@ ANSWER_MODE_CHOICES = (
     ('text', 'Text (User input text)')
 )
 
+DIFFICULTY_LEVEL_CHOICES = (
+    ('easy', 'Easy'),
+    ('medium', 'Medium'),
+    ('hard', 'Hard')
+)
+
+
+class QuestionCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 
 class QuestionModel(models.Model):
     main_class_id = models.IntegerField()
     question = models.TextField()
     answer_property_id = models.IntegerField()
     answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
+    difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
+    category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.question
@@ -27,3 +44,12 @@ class GameMode(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UserCategoryWeight(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(QuestionCategory, on_delete=models.CASCADE)
+    weight = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.user.username + ' - ' + self.category.name + '(' + str(self.weight) + ')'

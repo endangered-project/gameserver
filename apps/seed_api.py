@@ -59,3 +59,17 @@ def get_instance_from_class(class_id):
     if response.status_code != 200:
         raise Exception(f'Error when getting instance from class. Status code: {response.status_code}')
     return response.json()['instance']
+
+
+def get_instance(instance_id):
+    """
+    Get instance by ID
+    API endpoint : /api/instance/{instance_id}
+    :param instance_id: ID of instance
+    :return: Instance in JSON format
+    """
+    url = f'{KNOWLEDGE_BASE_URL}/api/instance/{instance_id}'
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f'Error when getting instance from knowledge base. Status code: {response.status_code}')
+    return response.json()

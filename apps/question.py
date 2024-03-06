@@ -1,8 +1,10 @@
 import logging
 import random
 
-from apps.models import QuestionModel, GameMode
-from apps.seed_api import get_instance_from_class
+from django.contrib.auth.models import User
+
+from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight
+from apps.seed_api import get_instance_from_class, get_instance
 
 logger = logging.getLogger(__name__)
 
@@ -11,17 +13,52 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 30):
+def generate_question(choices: int = 4, try_count: int = 50, specific_question_id: int = None, target_user: User = None):
     """
     Generate a question for the user to answer
+    :param specific_question_id: Specific question ID to generate if want to generate specific question
     :param choices: Number of choices to generate
     :param try_count: Number of tries to generate question
     :return: Dict of question, choices, and answer
     """
     for i in range(try_count):
         try:
+            # random category
+            category = QuestionCategory.objects.order_by('?').first()
+            if category is None:
+                raise FailedToGenerateQuestion("No category found")
+
+            # filter only question that have category in user's weight
+            # > 5.0 -> allow medium
+            # > 10.0 -> allow hard
+
+            if target_user:
+                try:
+                    weight = UserCategoryWeight.objects.get(user=target_user, category=category)
+                except UserCategoryWeight.DoesNotExist:
+                    weight = UserCategoryWeight.objects.create(user=target_user, category=category, weight=0.0)
+                weight = weight.weight
+            else:
+                # random 1-10 float
+                weight = random.uniform(0.0, 10.0)
+
+            if weight < 5.0:
+                difficulty_level = "easy"
+            elif weight < 10.0:
+                difficulty_level = "medium"
+            else:
+                difficulty_level = "hard"
+
             # random one question
-            question = QuestionModel.objects.order_by('?').first()
+            if specific_question_id:
+                try:
+                    question = QuestionModel.objects.get(pk=specific_question_id)
+                except QuestionModel.DoesNotExist:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+            else:
+                all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level)
+                question = random.choice(all_question)
+
             # random the game mode
             game_mode = GameMode.objects.order_by('?').first()
 
@@ -94,8 +131,14 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             choice_property_value = next((pv for pv in choice_instance['property_values'] if
                                           pv['property_type']['id'] == question.answer_property_id), None)
             choice_type = choice_property_value['property_type']['raw_type']
-            if choice_property_value['raw_value'] not in choice_list:
-                choice_list.append(choice_property_value['raw_value'])
+            if choice_type == "instance":
+                instance = get_instance(choice_property_value['raw_value'])
+                choice_list.append(instance["name"])
+            else:
+                if choice_property_value['raw_value'] not in choice_list:
+                    choice_list.append(choice_property_value['raw_value'])
+                else:
+                    continue
         except StopIteration or KeyError:
             raise FailedToGenerateQuestion(
                 f"Failed to generate question, property ID {question.answer_property_id} not found")
@@ -105,7 +148,12 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
     # append the answer to the choice in random position
     answer_property_value = next((pv for pv in question_instance['property_values'] if
                                   pv['property_type']['id'] == question.answer_property_id), None)
-    choice_list.insert(random.randint(0, len(choice_list)), answer_property_value['raw_value'])
+    if answer_property_value['property_type']['raw_type'] == "instance":
+        instance = get_instance(answer_property_value['raw_value'])
+        answer_raw_value = instance["name"]
+    else:
+        answer_raw_value = answer_property_value['raw_value']
+    choice_list.insert(random.randint(0, len(choice_list)), answer_raw_value)
 
     return {
         "question": {
@@ -121,8 +169,10 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             "name": game_mode.name
         },
         "choices": choice_list,
-        "answer": answer_property_value['raw_value'],
-        "type": choice_type
+        "choices_type": choice_type,
+        "answer": answer_raw_value,
+        "type": choice_type,
+        "difficulty_level": question.difficulty_level
     }
 
 
@@ -158,7 +208,8 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
                 f"Failed to generate question, property {question_property} not found in instance")
 
     choice_list = []
-    answer_property_value = next((pv for pv in question_instance['property_values'] if pv['property_type']['id'] == question.answer_property_id), None)
+    answer_property_value = next((pv for pv in question_instance['property_values'] if
+                                  pv['property_type']['id'] == question.answer_property_id), None)
     choice_type = answer_property_value['property_type']['raw_type']
 
     return {
@@ -175,6 +226,8 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
             "name": game_mode.name
         },
         "choices": choice_list,
+        "choices_type": choice_type,
         "answer": answer_property_value['raw_value'],
-        "type": choice_type
+        "type": choice_type,
+        "difficulty_level": question.difficulty_level
     }
