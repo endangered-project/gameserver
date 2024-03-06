@@ -1,0 +1,48 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Text Custom Question List{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Text Custom Question List
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Text Custom Question List</h1>
+    <a href="{% url 'apps_text_custom_question_create' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Create</a>
+    <a href="{% url 'apps_question_generator_test' %}" class="btn btn-primary"><i class="mdi mdi-flask" aria-hidden="true" style="font-size: 20px"></i> Test</a>
+    <p></p>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Question</th>
+                <th>Difficulty</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in questions %}
+            <tr>
+                <td scope="row">{{ question.id }}</td>
+                <td>{{ question.question }}</td>
+                <td>{{ question.difficulty_level }}</td>
+                <td>{{ question.category }}</td>
+                <td>
+                    <a href="{% url 'apps_text_custom_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

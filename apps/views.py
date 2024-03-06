@@ -3,10 +3,12 @@ import logging
 from decouple import config
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.core.files.storage import default_storage
 from django.shortcuts import render, redirect
 
-from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm
-from apps.models import QuestionModel, GameMode, QuestionCategory
+from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm, TextCustomQuestionForm, \
+    ImageCustomQuestionForm
+from apps.models import QuestionModel, GameMode, QuestionCategory, TextCustomQuestion, ImageCustomQuestion
 from apps.question import generate_question
 from apps.utils import create_all_weighted
 
@@ -205,4 +207,99 @@ def question_generator_test(request):
     return render(request, 'apps/question_generator_test.html', {
         "question": question,
         "exception_message": exception_message
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def text_custom_question_list(request):
+    return render(request, 'apps/text_custom_question/list.html', {
+        'questions': TextCustomQuestion.objects.all()
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def text_custom_question_create(request):
+    if request.method == 'POST':
+        form = TextCustomQuestionForm(request.POST)
+        if form.is_valid():
+            TextCustomQuestion.objects.create(
+                question=form.cleaned_data['question'],
+                choices=form.cleaned_data['choices'],
+                answer=form.cleaned_data['answer'],
+                category=form.cleaned_data['category']
+            )
+            messages.success(request, 'Question created successfully')
+            return redirect('apps_text_custom_question_list')
+    else:
+        form = TextCustomQuestionForm()
+    return render(request, 'apps/text_custom_question/create.html', {
+        'form': form
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def text_custom_question_edit(request, question_id):
+    try:
+        question = TextCustomQuestion.objects.get(pk=question_id)
+    except TextCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_text_custom_question_list')
+    if request.method == 'POST':
+        form = TextCustomQuestionForm(request.POST)
+        if form.is_valid():
+            question.question = form.cleaned_data['question']
+            question.choices = form.cleaned_data['choices']
+            question.answer = form.cleaned_data['answer']
+            question.category = form.cleaned_data['category']
+            question.save()
+            messages.success(request, 'Question updated successfully')
+            return redirect('apps_text_custom_question_list')
+    else:
+        form = TextCustomQuestionForm(initial={
+            'question': question.question,
+            'choices': question.choices,
+            'answer': question.answer,
+            'category': question.category
+        })
+    return render(request, 'apps/text_custom_question/edit.html', {
+        'form': form,
+        'question': question
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def image_custom_question_list(request):
+    return render(request, 'apps/image_custom_question/list.html', {
+        'questions': ImageCustomQuestion.objects.all()
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def image_custom_question_create(request):
+    if request.method == 'POST':
+        form = ImageCustomQuestionForm(request.POST, request.FILES)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            image_choice = []
+            # save image from form (choices)
+            for image in request.FILES.getlist('choices'):
+                default_storage.save(f'custom_question/{image.name}', image)
+                image_choice.append(default_storage.url(f'custom_question/{image.name}'))
+            ImageCustomQuestion.objects.create(
+                question=form.cleaned_data['question'],
+                choices=image_choice,
+                answer=default_storage.url(image_choice[cleaned_data['answer_len']]),
+                category=form.cleaned_data['category']
+            )
+            messages.success(request, 'Question created successfully')
+            return redirect('apps_image_custom_question_list')
+    else:
+        form = ImageCustomQuestionForm()
+    return render(request, 'apps/image_custom_question/create.html', {
+        'form': form
     })

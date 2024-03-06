@@ -1,7 +1,14 @@
-from django import forms
+import json
 
-from apps.models import QuestionModel, ANSWER_MODE_CHOICES, QuestionCategory
+from django import forms
+from django.core.validators import FileExtensionValidator
+
+from apps.models import QuestionModel, ANSWER_MODE_CHOICES, QuestionCategory, TextCustomQuestion
 from apps.seed_api import get_all_class, get_property_type_from_class
+
+
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
 
 
 class QuestionModelForm(forms.Form):
@@ -159,3 +166,141 @@ class QuestionCategoryForm(forms.ModelForm):
     class Meta:
         model = QuestionCategory
         fields = '__all__'
+
+
+class TextCustomQuestionForm(forms.Form):
+    question = forms.CharField(
+        label='Question',
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Question of this custom question'
+    )
+    choices = forms.CharField(
+        label='Choices',
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Choices of this custom question in JSON list format, example: ["choice1", "choice2", "choice3", "choice4"]. Minimum 4 choices'
+    )
+    answer = forms.CharField(
+        label='Answer',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Answer of this custom question'
+    )
+    category = forms.ModelChoiceField(
+        label='Category',
+        queryset=QuestionCategory.objects.all(),
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Category of this custom question'
+    )
+
+    class Meta:
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        choices = cleaned_data.get('choices')
+        answer = cleaned_data.get('answer')
+        # Test parsing choices as JSON list
+        try:
+            parsed_choices = json.loads(choices)
+            # Check parsed_choices is list
+            if not isinstance(parsed_choices, list):
+                self.add_error('choices', 'Choices must be a valid JSON list')
+                return
+            # Check have choice more than 4
+            if len(parsed_choices) < 4:
+                self.add_error('choices', 'Choices must have more than 4')
+                return
+            # Convert each choice to string
+            parsed_choices = [str(c) for c in parsed_choices]
+            cleaned_data['choices'] = parsed_choices
+        except json.JSONDecodeError:
+            self.add_error('choices', 'Choices must be a valid JSON list')
+            return
+        # Test answer exist in choices
+        if answer not in parsed_choices:
+            self.add_error('answer', 'Answer must be exist in choices')
+            return
+        return cleaned_data
+
+
+class ImageCustomQuestionForm(forms.Form):
+    question = forms.CharField(
+        label='Question',
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Question of this custom question'
+    )
+    # upload multiple images
+    choices = forms.FileField(
+        label='Choices',
+        widget=MultipleFileInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
+        help_text='Choices of this custom question in image format, minimum 4 choices (jpg, jpeg, png)'
+    )
+    answer = forms.ImageField(
+        label='Answer',
+        widget=forms.FileInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
+        help_text='Answer of this custom question in image format (jpg, jpeg, png), the answer must be exist in choices'
+    )
+    category = forms.ModelChoiceField(
+        label='Category',
+        queryset=QuestionCategory.objects.all(),
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        help_text='Category of this custom question'
+    )
+
+    class Meta:
+        exclude = ['choices']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        cleaned_data['choices'] = self.files.getlist('choices')
+        cleaned_data['answer'] = self.files.get('answer')
+        # get from raw data
+        choices = self.files.getlist('choices')
+        answer = self.files.get('answer')
+        # Check have choice more than 4
+        if len(choices) < 4:
+            self.add_error('choices', 'Choices must have more than 4')
+            return
+        # Test answer exist in choices (check by filename)
+        if answer.name not in [c.name for c in choices]:
+            self.add_error('answer', 'Answer must be exist in choices')
+            return
+        # Save len of answer in choices
+        cleaned_data['answer_len'] = len(choices)
+        return cleaned_data
+
+    def is_valid(self):
+        valid = super().is_valid()

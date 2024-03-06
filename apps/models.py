@@ -53,3 +53,23 @@ class UserCategoryWeight(models.Model):
 
     def __str__(self):
         return self.user.username + ' - ' + self.category.name + '(' + str(self.weight) + ')'
+
+
+class TextCustomQuestion(models.Model):
+    question = models.TextField()
+    choices = models.TextField()
+    answer = models.TextField()
+    category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.question
+
+
+class ImageCustomQuestion(models.Model):
+    question = models.TextField()
+    choices = models.TextField()
+    answer = models.TextField()
+    category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.question
