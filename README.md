@@ -54,7 +54,7 @@ poetry run python manage.py runserver
 ```
 
 ### 📊 Progression
-Jump to Shīdo [GitHub Project](https://github.com/orgs/endangered-project/projects/1/) ([or the old board](https://github.com/users/HelloYeew/projects/8/views/2)).
+See [GitHub Project](https://github.com/orgs/endangered-project/projects/1/) ([or the old board](https://github.com/users/HelloYeew/projects/8/views/2)).
 
 ---
 
