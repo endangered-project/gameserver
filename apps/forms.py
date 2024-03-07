@@ -224,6 +224,14 @@ class TextCustomQuestionForm(forms.Form):
     class Meta:
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'category' not in self.initial:
+            try:
+                self.initial['category'] = QuestionCategory.objects.get(name='Uncategorized')
+            except QuestionCategory.DoesNotExist:
+                pass
+
     def clean(self):
         cleaned_data = super().clean()
         choices = cleaned_data.get('choices')
@@ -295,7 +303,15 @@ class ImageCustomQuestionForm(forms.Form):
     )
 
     class Meta:
-        exclude = ['choices']
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'category' not in self.initial:
+            try:
+                self.initial['category'] = QuestionCategory.objects.get(name='Uncategorized')
+            except QuestionCategory.DoesNotExist:
+                pass
 
     def clean(self):
         cleaned_data = super().clean()
@@ -314,5 +330,4 @@ class ImageCustomQuestionForm(forms.Form):
             return
         # Save index of answer in choices
         cleaned_data['answer_len'] = [c.name for c in choices].index(answer.name)
-        print(cleaned_data)
         return cleaned_data

@@ -287,10 +287,9 @@ def image_custom_question_create(request):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             image_choice = []
-            # save image from form (choices)
             for image in request.FILES.getlist('choices'):
-                default_storage.save(f'custom_question/{image.name}', image)
-                image_choice.append(default_storage.url(f'custom_question/{image.name}'))
+                saved_path = default_storage.save(f'custom_question/{image.name}', image)
+                image_choice.append(default_storage.url(saved_path))
             ImageCustomQuestion.objects.create(
                 question=form.cleaned_data['question'],
                 choices=json.dumps(image_choice),
@@ -323,10 +322,10 @@ def image_custom_question_edit(request, question_id):
             # save image from form (choices)
             choices = []
             for image in request.FILES.getlist('choices'):
-                default_storage.save(f'custom_question/{image.name}', image)
-                choices.append(default_storage.url(f'custom_question/{image.name}'))
+                saved_path = default_storage.save(f'custom_question/{image.name}', image)
+                choices.append(default_storage.url(saved_path))
             question.choices = json.dumps(choices)
-            question.answer = default_storage.url(question.choices[cleaned_data['answer_len']])
+            question.answer = choices[cleaned_data['answer_len']]
             question.save()
             messages.success(request, 'Question updated successfully')
             return redirect('apps_image_custom_question_list')
@@ -345,7 +344,7 @@ def image_custom_question_edit(request, question_id):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
-def  image_custom_question_view(request, question_id):
+def image_custom_question_view(request, question_id):
     try:
         question = ImageCustomQuestion.objects.get(pk=question_id)
     except ImageCustomQuestion.DoesNotExist:
