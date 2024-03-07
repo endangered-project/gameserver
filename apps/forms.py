@@ -210,6 +210,20 @@ class TextCustomQuestionForm(forms.Form):
         ),
         help_text='Answer of this custom question'
     )
+    difficulty_level = forms.CharField(
+        label='Difficulty Level',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            },
+            choices=[
+                ('easy', 'Easy'),
+                ('medium', 'Medium'),
+                ('hard', 'Hard')
+            ]
+        ),
+        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question'
+    )
     category = forms.ModelChoiceField(
         label='Category',
         queryset=QuestionCategory.objects.all(),
@@ -290,6 +304,20 @@ class ImageCustomQuestionForm(forms.Form):
         ),
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
         help_text='Answer of this custom question in image format (jpg, jpeg, png), the answer must be exist in choices'
+    )
+    difficulty_level = forms.CharField(
+        label='Difficulty Level',
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            },
+            choices=[
+                ('easy', 'Easy'),
+                ('medium', 'Medium'),
+                ('hard', 'Hard')
+            ]
+        ),
+        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question'
     )
     category = forms.ModelChoiceField(
         label='Category',

@@ -229,6 +229,7 @@ def text_custom_question_create(request):
                 question=form.cleaned_data['question'],
                 choices=form.cleaned_data['choices'],
                 answer=form.cleaned_data['answer'],
+                difficulty_level=form.cleaned_data['difficulty_level'],
                 category=form.cleaned_data['category']
             )
             messages.success(request, 'Question created successfully')
@@ -254,6 +255,7 @@ def text_custom_question_edit(request, question_id):
             question.question = form.cleaned_data['question']
             question.choices = form.cleaned_data['choices']
             question.answer = form.cleaned_data['answer']
+            question.difficulty_level = form.cleaned_data['difficulty_level']
             question.category = form.cleaned_data['category']
             question.save()
             messages.success(request, 'Question updated successfully')
@@ -261,7 +263,7 @@ def text_custom_question_edit(request, question_id):
     else:
         form = TextCustomQuestionForm(initial={
             'question': question.question,
-            'choices': question.choices,
+            'choices': question.choices.replace("'", '"'),
             'answer': question.answer,
             'category': question.category
         })
@@ -294,6 +296,7 @@ def image_custom_question_create(request):
                 question=form.cleaned_data['question'],
                 choices=json.dumps(image_choice),
                 answer=image_choice[cleaned_data['answer_len']],
+                difficulty_level=form.cleaned_data['difficulty_level'],
                 category=form.cleaned_data['category']
             )
             messages.success(request, 'Question created successfully')
@@ -326,6 +329,7 @@ def image_custom_question_edit(request, question_id):
                 choices.append(default_storage.url(saved_path))
             question.choices = json.dumps(choices)
             question.answer = choices[cleaned_data['answer_len']]
+            question.difficulty_level = form.cleaned_data['difficulty_level']
             question.save()
             messages.success(request, 'Question updated successfully')
             return redirect('apps_image_custom_question_list')

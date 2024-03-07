@@ -59,6 +59,7 @@ class TextCustomQuestion(models.Model):
     question = models.TextField()
     choices = models.TextField()
     answer = models.TextField()
+    difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
@@ -69,6 +70,7 @@ class ImageCustomQuestion(models.Model):
     question = models.TextField()
     choices = models.TextField()
     answer = models.TextField()
+    difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
