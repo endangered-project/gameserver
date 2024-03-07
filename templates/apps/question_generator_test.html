@@ -19,6 +19,8 @@
         Use <code>id</code> query parameter to specify the question id.
     </div>
     {% if question %}
+        <p style="color: aqua">Question Mode : {{ question.question_mode }}</p>
+        
         <p>Game mode : {{ question.game_mode.name }}</p>
         <p>Answer mode : {{ question.question.answer_mode }}</p>
         

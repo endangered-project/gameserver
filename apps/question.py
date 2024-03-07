@@ -1,9 +1,11 @@
+import json
 import logging
 import random
 
 from django.contrib.auth.models import User
 
-from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight
+from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight, TextCustomQuestion, \
+    ImageCustomQuestion
 from apps.seed_api import get_instance_from_class, get_instance
 
 logger = logging.getLogger(__name__)
@@ -13,7 +15,10 @@ class FailedToGenerateQuestion(Exception):
     pass
 
 
-def generate_question(choices: int = 4, try_count: int = 50, specific_question_id: int = None, target_user: User = None):
+QUESTION_MODE = ['seed_question', 'text_custom_question', 'image_custom_question']
+
+
+def generate_question(choices: int = 4, try_count: int = 100, specific_question_id: int = None, target_user: User = None, question_mode: str = None):
     """
     Generate a question for the user to answer
     :param specific_question_id: Specific question ID to generate if want to generate specific question
@@ -49,15 +54,44 @@ def generate_question(choices: int = 4, try_count: int = 50, specific_question_i
             else:
                 difficulty_level = "hard"
 
-            # random one question
-            if specific_question_id:
-                try:
-                    question = QuestionModel.objects.get(pk=specific_question_id)
-                except QuestionModel.DoesNotExist:
-                    raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+            # random between seed_question, text_custom_question, and image_custom_question
+            if question_mode:
+                if question_mode not in QUESTION_MODE:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question_mode} is not allowed")
+                question_mode = question_mode
             else:
-                all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level)
-                question = random.choice(all_question)
+                question_mode = random.choice(QUESTION_MODE)
+
+            # random one question
+            if question_mode == "seed_question":
+                if specific_question_id:
+                    try:
+                        question = QuestionModel.objects.get(pk=specific_question_id)
+                    except QuestionModel.DoesNotExist:
+                        raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+                else:
+                    all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level)
+                    question = random.choice(all_question)
+            elif question_mode == "text_custom_question":
+                if specific_question_id:
+                    try:
+                        question = TextCustomQuestion.objects.get(pk=specific_question_id)
+                    except TextCustomQuestion.DoesNotExist:
+                        raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+                else:
+                    all_question = TextCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level)
+                    question = random.choice(all_question)
+            elif question_mode == "image_custom_question":
+                if specific_question_id:
+                    try:
+                        question = ImageCustomQuestion.objects.get(pk=specific_question_id)
+                    except ImageCustomQuestion.DoesNotExist:
+                        raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
+                else:
+                    all_question = ImageCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level)
+                    question = random.choice(all_question)
+            else:
+                raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question_mode} not found")
 
             # random the game mode
             game_mode = GameMode.objects.order_by('?').first()
@@ -65,13 +99,26 @@ def generate_question(choices: int = 4, try_count: int = 50, specific_question_i
             if question is None or game_mode is None:
                 raise FailedToGenerateQuestion("No question or game mode found")
 
-            if question.answer_mode not in game_mode.allow_answer_mode:
-                raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question.answer_mode} not allowed in game mode {game_mode.name}")
+            if question_mode == "seed_question":
+                if question.answer_mode not in game_mode.allow_answer_mode:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question.answer_mode} not allowed in game mode {game_mode.name}")
 
-            if question.answer_mode == "single_right":
-                return generate_single_right_question(question, game_mode, choices)
-            elif question.answer_mode == "text":
-                return generate_text_question(question, game_mode)
+                if question.answer_mode == "single_right":
+                    return generate_single_right_question(question, game_mode, choices)
+                elif question.answer_mode == "text":
+                    return generate_text_question(question, game_mode)
+                else:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question.answer_mode} not found")
+            elif question_mode == "text_custom_question":
+                if "single_right" not in game_mode.allow_answer_mode:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
+                return generate_text_custom_question(question, game_mode, choices)
+            elif question_mode == "image_custom_question":
+                if "single_right" not in game_mode.allow_answer_mode:
+                    raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
+                return generate_image_custom_question(question, game_mode, choices)
+            else:
+                raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question_mode} not found")
 
         except FailedToGenerateQuestion as e:
             logger.error(f"Failed to generate question: {e}")
@@ -164,6 +211,7 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             "answer_property": question.answer_property_id,
             "answer_mode": question.answer_mode
         },
+        "question_mode": "seed_question",
         "rendered_question": rendered_question,
         "game_mode": {
             "name": game_mode.name
@@ -221,6 +269,7 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
             "answer_property": question.answer_property_id,
             "answer_mode": question.answer_mode
         },
+        "question_mode": "seed_question",
         "rendered_question": rendered_question,
         "game_mode": {
             "name": game_mode.name
@@ -229,5 +278,87 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
         "choices_type": choice_type,
         "answer": answer_property_value['raw_value'],
         "type": choice_type,
+        "difficulty_level": question.difficulty_level
+    }
+
+
+def generate_text_custom_question(question: TextCustomQuestion, game_mode: GameMode, choices: int = 4):
+    """
+    Generate a "text custom" question
+    :param question: TextCustomQuestion instance
+    :param game_mode: GameMode instance
+    :param choices: Number of choices to generate
+    :return: Dict of question, choices, and answer
+    """
+    if "single_right" not in game_mode.allow_answer_mode:
+        raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
+
+    answer = question.answer
+    choice_list = json.loads(question.choices.replace("'", '"'))
+    if len(choice_list) < choices - 1:
+        raise FailedToGenerateQuestion(f"Failed to generate question, choice list is less than {choices - 1}")
+    final_choice = [answer]
+    while len(final_choice) < choices:
+        choice = random.choice(choice_list)
+        if choice not in final_choice:
+            final_choice.append(choice)
+
+    random.shuffle(final_choice)
+
+    return {
+        "question": {
+            "text": question.question,
+            "answer_mode": "single_right"
+        },
+        "question_mode": "text_custom_question",
+        "rendered_question": question.question,
+        "game_mode": {
+            "name": game_mode.name
+        },
+        "choices": final_choice,
+        "choices_type": "text",
+        "answer": question.answer,
+        "type": "text",
+        "difficulty_level": question.difficulty_level
+    }
+
+
+def generate_image_custom_question(question: ImageCustomQuestion, game_mode: GameMode, choices: int = 4):
+    """
+    Generate a "image custom" question
+    :param question: ImageCustomQuestion instance
+    :param game_mode: GameMode instance
+    :param choices: Number of choices to generate
+    :return: Dict of question, choices, and answer
+    """
+    if "single_right" not in game_mode.allow_answer_mode:
+        raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
+
+    answer = question.answer
+    choice_list = json.loads(question.choices.replace("'", '"'))
+    if len(choice_list) <= choices - 1:
+        raise FailedToGenerateQuestion(f"Failed to generate question, choice list is less than {choices - 1}")
+    final_choice = [answer]
+    while len(final_choice) < choices:
+        choice = random.choice(choice_list)
+        if choice not in final_choice:
+            final_choice.append(choice)
+
+    random.shuffle(final_choice)
+
+    return {
+        "question": {
+            "text": question.question,
+            "answer_mode": "single_right"
+        },
+        "question_mode": "image_custom_question",
+        "rendered_question": question.question,
+        "game_mode": {
+            "name": game_mode.name
+        },
+        "choices": final_choice,
+        "choices_type": "image",
+        "answer": question.answer,
+        "type": "image",
         "difficulty_level": question.difficulty_level
     }
