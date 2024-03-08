@@ -21,6 +21,7 @@
     {% if question %}
         <p style="color: aqua">Question Mode : {{ question.question_mode }}</p>
         <p style="color: aqua">Question Category : {{ question.question_category }}</p>
+        <p style="color: aqua">Question Difficulty : {{ question.difficulty_level }}</p>
         
         <p>Game mode : {{ question.game_mode.name }}</p>
         <p>Answer mode : {{ question.question.answer_mode }}</p>
@@ -31,8 +32,6 @@
         
         <p>Answer type : {{ question.type }}</p>
         <p>Choices Type : {{ question.choices_type }}</p>
-        
-        <p>Difficulty : {{ question.difficulty_level }}</p>
 
         <p class="d-inline-flex gap-1">
             <a class="btn btn-secondary" data-bs-toggle="collapse" href="#rawJsonCollapse" role="button" aria-expanded="false" aria-controls="rawJsonCollapse">
