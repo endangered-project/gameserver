@@ -257,6 +257,10 @@ class TextCustomQuestionForm(forms.Form):
             if not isinstance(parsed_choices, list):
                 self.add_error('choices', 'Choices must be a valid JSON list')
                 return
+            # Check duplicate choice
+            if len(parsed_choices) != len(set(parsed_choices)):
+                self.add_error('choices', 'Choices must be unique')
+                return
             # Check have choice more than 4
             if len(parsed_choices) < 4:
                 self.add_error('choices', 'Choices must have more than 4')
@@ -273,6 +277,10 @@ class TextCustomQuestionForm(forms.Form):
             # Check parsed_answer is list
             if not isinstance(parsed_answer, list):
                 self.add_error('answer', 'Answer must be a valid JSON list')
+                return
+            # Check duplicate answer
+            if len(parsed_answer) != len(set(parsed_answer)):
+                self.add_error('answer', 'Answer must be unique')
                 return
             # Check have answer more than 1
             if len(parsed_answer) < 1:
@@ -371,6 +379,14 @@ class ImageCustomQuestionForm(forms.Form):
         # Check have choice more than 4
         if len(choices) < 4:
             self.add_error('choices', 'Choices must have more than 4')
+            return
+        # Check duplicate choice
+        if len(choices) != len(set(choices)):
+            self.add_error('choices', 'Choices must be unique')
+            return
+        # Check duplicate answer
+        if len(answer) != len(set(answer)):
+            self.add_error('answer', 'Answer must be unique')
             return
         # Get index of answer in choices
         cleaned_data['answer_len'] = []
