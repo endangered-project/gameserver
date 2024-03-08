@@ -293,7 +293,8 @@ def generate_text_custom_question(question: TextCustomQuestion, game_mode: GameM
     if "single_right" not in game_mode.allow_answer_mode:
         raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
 
-    answer = question.answer
+    all_answer = json.loads(question.answer.replace("'", '"'))
+    answer = random.choice(all_answer)
     choice_list = json.loads(question.choices.replace("'", '"'))
     if len(choice_list) < choices - 1:
         raise FailedToGenerateQuestion(f"Failed to generate question, choice list is less than {choices - 1}")
@@ -317,7 +318,7 @@ def generate_text_custom_question(question: TextCustomQuestion, game_mode: GameM
         },
         "choices": final_choice,
         "choices_type": "text",
-        "answer": question.answer,
+        "answer": answer,
         "type": "text",
         "difficulty_level": question.difficulty_level
     }
@@ -334,7 +335,8 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
     if "single_right" not in game_mode.allow_answer_mode:
         raise FailedToGenerateQuestion(f"Failed to generate question, question mode 'single_right' not allowed in game mode {game_mode.name}")
 
-    answer = question.answer
+    all_answer = json.loads(question.answer.replace("'", '"'))
+    answer = random.choice(all_answer)
     choice_list = json.loads(question.choices.replace("'", '"'))
     if len(choice_list) <= choices - 1:
         raise FailedToGenerateQuestion(f"Failed to generate question, choice list is less than {choices - 1}")
@@ -358,7 +360,7 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
         },
         "choices": final_choice,
         "choices_type": "image",
-        "answer": question.answer,
+        "answer": answer,
         "type": "image",
         "difficulty_level": question.difficulty_level
     }
