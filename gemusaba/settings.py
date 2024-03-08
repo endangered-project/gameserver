@@ -187,7 +187,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool, default=False)
 
-SESSION_COOKIE_AGE = 86400  # Set the session cookie age to only 1 day (in seconds)
+SESSION_COOKIE_AGE = 8640000  # Set the session cookie age to only 1 day (in seconds)
 
 # Logging
 # https://docs.djangoproject.com/en/5.0/topics/logging/
