@@ -20,6 +20,7 @@
     </div>
     {% if question %}
         <p style="color: aqua">Question Mode : {{ question.question_mode }}</p>
+        <p style="color: aqua">Question Category : {{ question.question_category }}</p>
         
         <p>Game mode : {{ question.game_mode.name }}</p>
         <p>Answer mode : {{ question.question.answer_mode }}</p>
@@ -33,7 +34,16 @@
         
         <p>Difficulty : {{ question.difficulty_level }}</p>
 
-        <p>Raw : {{ question }}</p>
+        <p class="d-inline-flex gap-1">
+            <a class="btn btn-secondary" data-bs-toggle="collapse" href="#rawJsonCollapse" role="button" aria-expanded="false" aria-controls="rawJsonCollapse">
+                Raw JSON response
+            </a>
+        </p>
+        <div class="collapse" id="rawJsonCollapse">
+            <div class="card card-body">
+                {{ indented_html_question | safe }}
+            </div>
+        </div>
     {% endif %}
     {% if exception_message %}
         <p style="color: red;">{{ exception_message }}</p>
@@ -41,5 +51,10 @@
 {% endblock %}
 
 {% block scripts %}
-
+<script>
+    // Auto launch collapse
+    var rawJsonCollapse = new bootstrap.Collapse(document.getElementById('rawJsonCollapse'), {
+        toggle: true
+    });
+</script>
 {% endblock %}

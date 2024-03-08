@@ -200,14 +200,17 @@ def question_generator_test(request):
             question = generate_question(specific_question_id=id)
         else:
             question = generate_question()
+        indented_html_question = str(json.dumps(question, indent=4)).replace('\n', '<br>').replace(' ', '&nbsp;')
         exception_message = None
     except Exception as e:
         logger.exception(e)
         question = None
+        indented_html_question = None
         exception_message = str(e)
     return render(request, 'apps/question_generator_test.html', {
         "question": question,
-        "exception_message": exception_message
+        "exception_message": exception_message,
+        "indented_html_question": indented_html_question
     })
 
 

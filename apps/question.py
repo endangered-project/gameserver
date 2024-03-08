@@ -212,6 +212,7 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             "answer_mode": question.answer_mode
         },
         "question_mode": "seed_question",
+        "question_category": question.category.name,
         "rendered_question": rendered_question,
         "game_mode": {
             "name": game_mode.name
@@ -270,6 +271,7 @@ def generate_text_question(question: QuestionModel, game_mode: GameMode):
             "answer_mode": question.answer_mode
         },
         "question_mode": "seed_question",
+        "question_category": question.category.name,
         "rendered_question": rendered_question,
         "game_mode": {
             "name": game_mode.name
@@ -312,6 +314,7 @@ def generate_text_custom_question(question: TextCustomQuestion, game_mode: GameM
             "answer_mode": "single_right"
         },
         "question_mode": "text_custom_question",
+        "question_category": question.category.name,
         "rendered_question": question.question,
         "game_mode": {
             "name": game_mode.name
@@ -354,6 +357,7 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
             "answer_mode": "single_right"
         },
         "question_mode": "image_custom_question",
+        "question_category": question.category.name,
         "rendered_question": question.question,
         "game_mode": {
             "name": game_mode.name
