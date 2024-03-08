@@ -264,7 +264,7 @@ def text_custom_question_edit(request, question_id):
         form = TextCustomQuestionForm(initial={
             'question': question.question,
             'choices': question.choices.replace("'", '"'),
-            'answer': question.answer,
+            'answer': question.answer.replace("'", '"'),
             'category': question.category
         })
     return render(request, 'apps/text_custom_question/edit.html', {
@@ -292,10 +292,13 @@ def image_custom_question_create(request):
             for image in request.FILES.getlist('choices'):
                 saved_path = default_storage.save(f'custom_question/{image.name}', image)
                 image_choice.append(default_storage.url(saved_path))
+            answer_choice = []
+            for answer in cleaned_data['answer_len']:
+                answer_choice.append(image_choice[answer])
             ImageCustomQuestion.objects.create(
                 question=form.cleaned_data['question'],
                 choices=json.dumps(image_choice),
-                answer=image_choice[cleaned_data['answer_len']],
+                answer=json.dumps(answer_choice),
                 difficulty_level=form.cleaned_data['difficulty_level'],
                 category=form.cleaned_data['category']
             )
@@ -328,7 +331,10 @@ def image_custom_question_edit(request, question_id):
                 saved_path = default_storage.save(f'custom_question/{image.name}', image)
                 choices.append(default_storage.url(saved_path))
             question.choices = json.dumps(choices)
-            question.answer = choices[cleaned_data['answer_len']]
+            answers = []
+            for answer in cleaned_data['answer_len']:
+                answers.append(choices[answer])
+            question.answer = json.dumps(answers)
             question.difficulty_level = form.cleaned_data['difficulty_level']
             question.save()
             messages.success(request, 'Question updated successfully')

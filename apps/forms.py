@@ -208,7 +208,7 @@ class TextCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Answer of this custom question'
+        help_text='Answer of this custom question in JSON list format, example: ["choice1"]. The answer must be exist in choices, also the minimum of choices that\'s right and wrong is 3'
     )
     difficulty_level = forms.CharField(
         label='Difficulty Level',
@@ -268,8 +268,29 @@ class TextCustomQuestionForm(forms.Form):
             self.add_error('choices', 'Choices must be a valid JSON list')
             return
         # Test answer exist in choices
-        if answer not in parsed_choices:
-            self.add_error('answer', 'Answer must be exist in choices')
+        try:
+            parsed_answer = json.loads(answer)
+            # Check parsed_answer is list
+            if not isinstance(parsed_answer, list):
+                self.add_error('answer', 'Answer must be a valid JSON list')
+                return
+            # Check have answer more than 1
+            if len(parsed_answer) < 1:
+                self.add_error('answer', 'Answer must have more than 1')
+                return
+            # Check answer exist in choices
+            if not all(a in parsed_choices for a in parsed_answer):
+                self.add_error('answer', 'Answer must be exist in choices')
+                return
+            # Check all choice - answer is 3
+            if len(parsed_choices) - len(parsed_answer) < 3:
+                self.add_error('answer', f'The minimum of choices that\'s right and wrong is 3 (choices: {len(parsed_choices)}, answer: {len(parsed_answer)})')
+                return
+            # Convert each answer to string
+            parsed_answer = [str(a) for a in parsed_answer]
+            cleaned_data['answer'] = parsed_answer
+        except json.JSONDecodeError:
+            self.add_error('answer', 'Answer must be a valid JSON list')
             return
         return cleaned_data
 
@@ -284,7 +305,6 @@ class ImageCustomQuestionForm(forms.Form):
         ),
         help_text='Question of this custom question'
     )
-    # upload multiple images
     choices = MultipleFileField(
         label='Choices',
         widget=MultipleFileInput(
@@ -295,15 +315,15 @@ class ImageCustomQuestionForm(forms.Form):
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
         help_text='Choices of this custom question in image format, minimum 4 choices (jpg, jpeg, png)'
     )
-    answer = forms.ImageField(
+    answer = MultipleFileField(
         label='Answer',
-        widget=forms.FileInput(
+        widget=MultipleFileInput(
             attrs={
                 'class': 'form-control'
             }
         ),
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
-        help_text='Answer of this custom question in image format (jpg, jpeg, png), the answer must be exist in choices'
+        help_text='Answer of this custom question in image format (jpg, jpeg, png), The answer must be exist in choices, also the minimum of choices that\'s right and wrong is 3'
     )
     difficulty_level = forms.CharField(
         label='Difficulty Level',
@@ -347,15 +367,21 @@ class ImageCustomQuestionForm(forms.Form):
         cleaned_data['answer'] = self.files.get('answer')
         # get from raw data
         choices = self.files.getlist('choices')
-        answer = self.files.get('answer')
+        answer = self.files.getlist('answer')
         # Check have choice more than 4
         if len(choices) < 4:
             self.add_error('choices', 'Choices must have more than 4')
             return
-        # Test answer exist in choices (check by filename)
-        if answer.name not in [c.name for c in choices]:
-            self.add_error('answer', 'Answer must be exist in choices')
+        # Get index of answer in choices
+        cleaned_data['answer_len'] = []
+        for a in answer:
+            try:
+                cleaned_data['answer_len'].append([c.name for c in choices].index(a.name))
+            except Exception as e:
+                print(e)
+                self.add_error('answer', f'Answer {a.name} not found in choices')
+        # Check all choice - answer is 3
+        if len(choices) - len(cleaned_data['answer_len']) < 3:
+            self.add_error('answer', 'The minimum of choices that\'s right and wrong is 3')
             return
-        # Save index of answer in choices
-        cleaned_data['answer_len'] = [c.name for c in choices].index(answer.name)
         return cleaned_data
