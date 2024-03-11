@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight, TextCustomQuestion, \
     ImageCustomQuestion
 from apps.seed_api import get_instance_from_class, get_instance
+from apps.utils import create_weight_from_database
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class FailedToGenerateQuestion(Exception):
 QUESTION_MODE = ['seed_question', 'text_custom_question', 'image_custom_question']
 
 
-def generate_question(choices: int = 4, try_count: int = 100, specific_question_id: int = None, target_user: User = None, question_mode: str = None):
+def generate_question(choices: int = 4, try_count: int = 100, specific_question_id: int = None, target_user: User = None, question_mode: str = None, custom_weight: dict = None):
     """
     Generate a question for the user to answer
     :param specific_question_id: Specific question ID to generate if want to generate specific question
@@ -37,12 +38,25 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
             # > 5.0 -> allow medium
             # > 10.0 -> allow hard
 
-            if target_user:
+            if custom_weight and target_user:
+                # We prefer to use custom weight if it's provided more than target_user
+                if category.id in custom_weight.keys():
+                    weight = custom_weight[category.id]
+                else:
+                    UserCategoryWeight.objects.create(user=target_user, category=category, weight=0.0)
+                    weight = 0.0
+            elif target_user and not custom_weight:
+                custom_weight = create_weight_from_database(target_user.id)
                 try:
-                    weight = UserCategoryWeight.objects.get(user=target_user, category=category)
-                except UserCategoryWeight.DoesNotExist:
-                    weight = UserCategoryWeight.objects.create(user=target_user, category=category, weight=0.0)
-                weight = weight.weight
+                    weight = custom_weight[category.id]
+                except KeyError:
+                    UserCategoryWeight.objects.create(user=target_user, category=category, weight=0.0)
+                    weight = 0.0
+            elif not target_user and custom_weight:
+                try:
+                    weight = custom_weight[category.id]
+                except KeyError:
+                    weight = 0.0
             else:
                 # random 1-10 float
                 weight = random.uniform(0.0, 10.0)
