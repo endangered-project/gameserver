@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -50,6 +51,7 @@ def start_new_game(request):
         for game in Game.objects.filter(finished=False):
             game.finished = True
             game.completed = False
+            game.end_time = timezone.now()
             game.save()
     game = Game.objects.create(
         user=request.user
@@ -162,6 +164,7 @@ def answer_question(request):
             if game.has_lose():
                 game.finished = True
                 game.completed = True
+                game.end_time = timezone.now()
             game.save()
             if is_true:
                 return Response({
