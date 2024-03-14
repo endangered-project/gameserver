@@ -2,6 +2,7 @@ import json
 import logging
 import random
 
+from decouple import config
 from django.contrib.auth.models import User
 
 from apps.models import QuestionModel, GameMode, QuestionCategory, UserCategoryWeight, TextCustomQuestion, \
@@ -10,6 +11,8 @@ from apps.seed_api import get_instance_from_class, get_instance
 from apps.utils import create_weight_from_database
 
 logger = logging.getLogger(__name__)
+CURRENT_URL = config('CURRENT_URL')
+KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL')
 
 
 class FailedToGenerateQuestion(Exception):
@@ -195,6 +198,8 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             if choice_type == "instance":
                 instance = get_instance(choice_property_value['raw_value'])
                 choice_list.append(instance["name"])
+            elif choice_type == "image":
+                choice_list.append(KNOWLEDGE_BASE_URL + choice_property_value['raw_value'])
             else:
                 if choice_property_value['raw_value'] not in choice_list:
                     choice_list.append(choice_property_value['raw_value'])
@@ -212,6 +217,8 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
     if answer_property_value['property_type']['raw_type'] == "instance":
         instance = get_instance(answer_property_value['raw_value'])
         answer_raw_value = instance["name"]
+    elif answer_property_value['property_type']['raw_type'] == "image":
+        answer_raw_value = KNOWLEDGE_BASE_URL + answer_property_value['raw_value']
     else:
         answer_raw_value = answer_property_value['raw_value']
     choice_list.insert(random.randint(0, len(choice_list)), answer_raw_value)
@@ -357,11 +364,11 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
     choice_list = json.loads(question.choices.replace("'", '"'))
     if len(choice_list) <= choices - 1:
         raise FailedToGenerateQuestion(f"Failed to generate question, choice list is less than {choices - 1}")
-    final_choice = [answer]
+    final_choice = [CURRENT_URL + answer]
     while len(final_choice) < choices:
         choice = random.choice(choice_list)
         if choice not in final_choice:
-            final_choice.append(choice)
+            final_choice.append(CURRENT_URL + choice)
 
     random.shuffle(final_choice)
 

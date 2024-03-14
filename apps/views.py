@@ -195,9 +195,10 @@ def question_category_edit(request, category_id):
 @user_passes_test(lambda u: u.is_staff)
 def question_generator_test(request):
     id = request.GET.get('id')
+    question_mode = request.GET.get('question_mode')
     try:
         if id:
-            question = generate_question(specific_question_id=id)
+            question = generate_question(specific_question_id=id, question_mode=question_mode if question_mode else None)
         else:
             question = generate_question()
         indented_html_question = str(json.dumps(question, indent=4)).replace('\n', '<br>').replace(' ', '&nbsp;')
