@@ -130,6 +130,7 @@ class GameQuestion(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     question = models.ForeignKey(QuestionHistory, on_delete=models.CASCADE)
     game_mode = models.ForeignKey(GameMode, on_delete=models.CASCADE)
+    selected = models.TextField(blank=True, null=True)
     is_true = models.BooleanField(default=False)
     answered = models.BooleanField(default=False)
 

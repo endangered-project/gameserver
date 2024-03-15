@@ -159,6 +159,7 @@ def answer_question(request):
                 question.save()
                 is_true = False
             # Calculate all weight and score of this game
+            game.selected = payload.data['answer']
             game.weight = create_total_weight_with_game(game.id)
             game.score = calculate_total_score(game.id)
             game.save()
