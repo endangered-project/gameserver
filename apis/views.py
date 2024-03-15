@@ -88,7 +88,7 @@ def get_new_question(request):
         random_question = generate_question(target_user=request.user, custom_weight=create_total_weight_with_game(game.id))
         new_question = QuestionHistory.objects.create(
             question_mode=random_question['question_mode'],
-            category=QuestionCategory.objects.get(id=random_question['question_category']),
+            category=QuestionCategory.objects.get(name=random_question['question_category']),
             difficulty_level=random_question['difficulty_level'],
             question=random_question['rendered_question'],
             choice=random_question['choices'],
@@ -99,14 +99,14 @@ def get_new_question(request):
         game_question = GameQuestion.objects.create(
             game=game,
             question=new_question,
-            game_mode=GameMode.objects.get(name=random_question['game_mode'])
+            game_mode=GameMode.objects.get(name=random_question['game_mode']['name'])
         )
         return Response({
             'message': 'New question generated',
             'question_id': new_question.id,
             'game_mode': game_question.game_mode.name,
             'question': random_question,
-            'choice': json.loads(new_question.choice.replace("'", '"')),
+            'choice': new_question.choice,
             'answer': new_question.answer
         })
     except FailedToGenerateQuestion as e:
@@ -160,6 +160,7 @@ def answer_question(request):
             # Calculate all weight and score of this game
             game.weight = create_total_weight_with_game(game.id)
             game.score = calculate_total_score(game.id)
+            game.save()
             # Check for end game
             if game.has_lose():
                 game.finished = True
@@ -168,15 +169,18 @@ def answer_question(request):
             game.save()
             if is_true:
                 return Response({
-                    'message': "Right answer"
+                    'message': "Right answer",
+                    'score': question.get_score()
                 })
             else:
                 return Response({
-                    'message': "Wrong answer"
+                    'message': "Wrong answer",
+                    'score': 0
                 })
         else:
             return Response({
                 'message': 'Invalid payload',
+                'score': 0,
                 'errors': payload.errors
             }, status=400)
     except Exception as e:

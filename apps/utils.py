@@ -38,7 +38,7 @@ def create_weight_from_database(user_id):
     all_weight = UserCategoryWeight.objects.filter(user_id=user_id)
     weight = {}
     for w in all_weight:
-        w[w.category.id] = w.weight
+        weight[w.category.id] = w.weight
     return weight
 
 

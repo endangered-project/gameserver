@@ -197,9 +197,15 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
             choice_type = choice_property_value['property_type']['raw_type']
             if choice_type == "instance":
                 instance = get_instance(choice_property_value['raw_value'])
-                choice_list.append(instance["name"])
+                if instance["name"] not in choice_list:
+                    choice_list.append(instance["name"])
+                else:
+                    continue
             elif choice_type == "image":
-                choice_list.append(KNOWLEDGE_BASE_URL + choice_property_value['raw_value'])
+                if KNOWLEDGE_BASE_URL + choice_property_value['raw_value'] not in choice_list:
+                    choice_list.append(KNOWLEDGE_BASE_URL + choice_property_value['raw_value'])
+                else:
+                    continue
             else:
                 if choice_property_value['raw_value'] not in choice_list:
                     choice_list.append(choice_property_value['raw_value'])
@@ -367,7 +373,7 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
     final_choice = [CURRENT_URL + answer]
     while len(final_choice) < choices:
         choice = random.choice(choice_list)
-        if choice not in final_choice:
+        if CURRENT_URL + choice not in final_choice:
             final_choice.append(CURRENT_URL + choice)
 
     random.shuffle(final_choice)
@@ -385,7 +391,7 @@ def generate_image_custom_question(question: ImageCustomQuestion, game_mode: Gam
         },
         "choices": final_choice,
         "choices_type": "image",
-        "answer": answer,
+        "answer": CURRENT_URL + answer,
         "type": "image",
         "difficulty_level": question.difficulty_level
     }

@@ -91,6 +91,7 @@ class Game(models.Model):
         return self.user.username + ' - ' + str(self.start_time)
 
     def has_lose(self):
+        print(GameQuestion.objects.filter(game=self, is_true=False, answered=True).count())
         if GameQuestion.objects.filter(game=self, is_true=False, answered=True).count() >= 3:
             return True
         return False
@@ -100,14 +101,14 @@ class QuestionHistory(models.Model):
     question_mode = models.CharField(max_length=100)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
     difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
-    question = models.ForeignKey(QuestionModel, on_delete=models.CASCADE)
+    question = models.TextField(blank=True, null=True)
     choice = models.TextField(blank=True, null=True)
     answer = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=100)
     full_json = models.JSONField(default=dict)
 
     def __str__(self):
-        return self.question.question + ' - ' + self.question_mode + ' - ' + self.type
+        return self.question + ' - ' + self.question_mode + ' - ' + self.type
 
     def get_right_weight(self):
         if self.difficulty_level == 'easy':
@@ -134,10 +135,20 @@ class GameQuestion(models.Model):
     answered = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.game.user.username + ' - ' + self.question.question.question + ' - ' + self.game_mode.name
+        return self.game.user.username + ' - ' + self.question.question + ' - ' + self.game_mode.name
 
     def get_weight(self):
         if self.is_true:
             return self.question.get_right_weight()
         else:
             return self.question.get_wrong_weight()
+
+    def get_score(self):
+        if self.is_true:
+            if self.question.difficulty_level == 'easy':
+                return 50
+            elif self.question.difficulty_level == 'medium':
+                return 100
+            else:
+                return 200
+        return 0
