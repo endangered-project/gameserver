@@ -1,0 +1,46 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Play History{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Play History
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Play History</h1>
+    <a href="{% url 'apps_user_profile' game.user.id %}" class="btn btn-primary"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 20px"></i> User Profile</a>
+    <p></p>
+    <p>Game ID: {{ game.id }}</p>
+    <p>Player: <a href="{% url 'apps_user_profile' game.user.id %}">{{ game.user.username }}</a></p>
+    <p>Score: {{ game.score }}</p>
+    <h2>Question</h2>
+    {% for question in question_list %}
+    <div style="padding-top: 1rem; padding-bottom: 1rem;">
+        <p>{% if question.is_true %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i>{% else %}<i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i>{% endif %} {{ question.question }}</p>
+        {% if question.type == 'image' %}
+            <div class="row">
+                {% for choice in question.choices %}
+                <div class="col-md-3">
+                    <img src="{{ choice }}" style="max-width: 100%; max-height: 100%;">
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            {% for choice in question.choices %}
+                <p>{{ choice }}</p>
+            {% endfor %}
+        {% endif %}
+        
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

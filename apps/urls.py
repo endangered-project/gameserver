@@ -24,4 +24,5 @@ urlpatterns = [
     path('leaderboard', leaderboard, name='apps_leaderboard'),
     path('profile', profile, name='apps_profile'),
     path('profile/<int:user_id>', user_profile, name='apps_user_profile'),
+    path('history/<int:game_id>', play_history, name='apps_play_history'),
 ]

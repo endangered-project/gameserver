@@ -47,6 +47,25 @@
             </div>
         </div>
     </div>
+    <h2 style="padding-top: 1rem; padding-bottom: 1rem;">History</h2>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Finish Time</th>
+                <th scope="col">Score</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history_object in history %}
+                <tr>
+                    <td>{{ history_object.end_time }}</td>
+                    <td>{{ history_object.score }}</td>
+                    <td><a href="{% url 'apps_play_history' history_object.id %}" class="btn btn-sm btn-primary"><i class="mdi mdi-eye" aria-hidden="true" style="font-size: 20px"></i> View</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 
 {% block scripts %}

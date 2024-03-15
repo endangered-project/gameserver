@@ -10,7 +10,8 @@ from django.shortcuts import render, redirect
 
 from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm, TextCustomQuestionForm, \
     ImageCustomQuestionForm
-from apps.models import QuestionModel, GameMode, QuestionCategory, TextCustomQuestion, ImageCustomQuestion, Game
+from apps.models import QuestionModel, GameMode, QuestionCategory, TextCustomQuestion, ImageCustomQuestion, Game, \
+    GameQuestion
 from apps.question import generate_question
 from apps.utils import create_all_weighted, generate_leaderboard, get_user_rank, get_user_highscore
 
@@ -397,4 +398,26 @@ def user_profile(request, user_id):
         'user_rank': get_user_rank(user_id),
         'user_high_score': get_user_highscore(user_id),
         'history': Game.objects.filter(user=user_obj, finished=True, completed=True).order_by('-end_time')
+    })
+
+
+def play_history(request, game_id):
+    try:
+        game = Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        messages.error(request, 'Game not found')
+        return redirect('apps_home')
+    question_history_list = []
+    for question in GameQuestion.objects.filter(game=game, answered=True).order_by('id'):
+        question_history_list.append({
+            'question': question.question.question,
+            'choices': json.loads(question.question.choice.replace("'", '"')),
+            'answer': question.question.answer,
+            'answered': question.answered,
+            'is_true': question.is_true,
+            'type': question.question.type
+        })
+    return render(request, 'apps/play_history.html', {
+        'game': game,
+        'question_list': question_history_list
     })
