@@ -4,14 +4,15 @@ import logging
 from decouple import config
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.shortcuts import render, redirect
 
 from apps.forms import QuestionModelForm, GameModeForm, QuestionCategoryForm, TextCustomQuestionForm, \
     ImageCustomQuestionForm
-from apps.models import QuestionModel, GameMode, QuestionCategory, TextCustomQuestion, ImageCustomQuestion
+from apps.models import QuestionModel, GameMode, QuestionCategory, TextCustomQuestion, ImageCustomQuestion, Game
 from apps.question import generate_question
-from apps.utils import create_all_weighted
+from apps.utils import create_all_weighted, generate_leaderboard, get_user_rank, get_user_highscore
 
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
 if KNOWLEDGE_BASE_URL[-1] == '/':
@@ -21,7 +22,11 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
-    return render(request, 'apps/home.html')
+    return render(request, 'apps/home.html', {
+        'user_obj': request.user if request.user.is_authenticated else None,
+        'user_rank': get_user_rank(request.user.id) if request.user.is_authenticated else 0,
+        'user_high_score': get_user_highscore(request.user.id) if request.user.is_authenticated else 0
+    })
 
 
 @login_required
@@ -367,4 +372,29 @@ def image_custom_question_view(request, question_id):
     return render(request, 'apps/image_custom_question/view.html', {
         'question': question,
         'choice_list': json.loads(question.choices)
+    })
+
+
+def leaderboard(request):
+    return render(request, 'apps/leaderboard.html', {
+        'leaderboard': generate_leaderboard()
+    })
+
+
+@login_required
+def profile(request):
+    return redirect('apps_user_profile', user_id=request.user.id)
+
+
+def user_profile(request, user_id):
+    try:
+        user_obj = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        messages.error(request, 'User not found')
+        return redirect('apps_home')
+    return render(request, 'apps/user_profile.html', {
+        'user_obj': user_obj,
+        'user_rank': get_user_rank(user_id),
+        'user_high_score': get_user_highscore(user_id),
+        'history': Game.objects.filter(user=user_obj, finished=True, completed=True).order_by('-end_time')
     })

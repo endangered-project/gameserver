@@ -19,5 +19,9 @@ urlpatterns = [
     path('image_custom_question/<int:question_id>/edit', image_custom_question_edit, name='apps_image_custom_question_edit'),
     path('game_mode', game_mode_list, name='apps_game_mode_list'),
     path('game_mode/create', game_mode_create, name='apps_game_mode_create'),
-    path('game_mode/<int:game_mode_id>/edit', game_mode_edit, name='apps_game_mode_edit')
+    path('game_mode/<int:game_mode_id>/edit', game_mode_edit, name='apps_game_mode_edit'),
+
+    path('leaderboard', leaderboard, name='apps_leaderboard'),
+    path('profile', profile, name='apps_profile'),
+    path('profile/<int:user_id>', user_profile, name='apps_user_profile'),
 ]

@@ -1,0 +1,44 @@
+{% extends "apps/base.html" %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Leaderboard
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Leaderboard</h1>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Username</th>
+                <th scope="col">Highest Achieved Score</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leaderboard_row in leaderboard %}
+                <tr class="{% if leaderboard_row.username == user.username %}table-success{% endif %}">
+                    <th scope="row" {% if leaderboard_row.username == user.username %}style="color: #1f2a24!important; font-weight: bold;"{% endif %}>{{ leaderboard_row.rank }}</th>
+                    <td {% if leaderboard_row.username == user.username %}style="color: #1f2a24!important; font-weight: bold;"{% endif %}>{{ leaderboard_row.username }}</td>
+                    <td {% if leaderboard_row.username == user.username %}style="color: #1f2a24!important; font-weight: bold;"{% endif %}>{{ leaderboard_row.score }}</td>
+                    <td>
+                        <a href="{% url 'apps_user_profile' leaderboard_row.user_id %}" class="btn btn-primary btn-sm"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 20px"></i> View Profile</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

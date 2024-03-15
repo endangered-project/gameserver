@@ -77,3 +77,44 @@ def calculate_total_score(game_id):
         else:
             total_score += 200
     return total_score
+
+
+def generate_leaderboard():
+    """
+    Generate leaderboard
+    :return: Leaderboard dict
+    """
+    leaderboard = {}
+    for user in User.objects.all():
+        leaderboard[user.username] = 0
+        for game in Game.objects.filter(user=user, finished=True, completed=True):
+            leaderboard[user.username] += game.score
+    leaderboard = dict(sorted(leaderboard.items(), key=lambda item: item[1], reverse=True))
+    leaderboard = [{"username": k, "score": v, "rank": i + 1, "user_id": User.objects.get(username=k).id} for i, (k, v) in enumerate(leaderboard.items())]
+    return leaderboard
+
+
+def get_user_rank(user_id):
+    """
+    Get user's rank
+    :param user_id: User ID
+    :return: Rank
+    """
+    leaderboard = generate_leaderboard()
+    for i, user in enumerate(leaderboard):
+        if user['user_id'] == user_id:
+            return i + 1
+    return 0
+
+
+def get_user_highscore(user_id):
+    """
+    Get user's highscore
+    :param user_id: User ID
+    :return: Highscore
+    """
+    leaderboard = generate_leaderboard()
+    for user in leaderboard:
+        if user['user_id'] == user_id:
+            return user['score']
+    return 0
