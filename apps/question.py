@@ -189,6 +189,9 @@ def generate_single_right_question(question: QuestionModel, game_mode: GameMode,
     if len(instance_list) < choices - 1:
         raise FailedToGenerateQuestion(f"Failed to generate question, instance list is less than {choices - 1}")
 
+    # Remove the answer instance from the instance list
+    instance_list = [i for i in instance_list if i['id'] != question_instance['id']]
+
     while len(choice_list) < choices - 1:
         try:
             choice_instance = random.choice(instance_list)

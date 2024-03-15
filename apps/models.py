@@ -91,7 +91,6 @@ class Game(models.Model):
         return self.user.username + ' - ' + str(self.start_time)
 
     def has_lose(self):
-        print(GameQuestion.objects.filter(game=self, is_true=False, answered=True).count())
         if GameQuestion.objects.filter(game=self, is_true=False, answered=True).count() >= 3:
             return True
         return False
