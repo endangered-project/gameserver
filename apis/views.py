@@ -9,6 +9,7 @@ from apis.serializers import AnswerQuestionSerializer
 from apps.models import Game, GameQuestion, QuestionHistory, QuestionCategory, GameMode
 from apps.question import generate_question, FailedToGenerateQuestion
 from apps.utils import create_total_weight_with_game, calculate_total_score
+from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +190,19 @@ def answer_question(request):
         return Response({
             'message': 'Internal server error'
         }, status=500)
+
+
+@api_view(['GET'])
+def get_user_info(request):
+    """
+    Get user info
+    """
+    if not request.user.is_authenticated:
+        return Response({
+            'message': 'User is not authenticated'
+        }, status=401)
+    profile = Profile.objects.get(user=request.user)
+    return Response({
+        'username': request.user.username,
+        'profile_picture': profile.get_full_avatar_url()
+    })
