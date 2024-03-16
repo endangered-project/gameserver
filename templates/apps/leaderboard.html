@@ -26,6 +26,7 @@
         </thead>
         <tbody>
             {% for leaderboard_row in leaderboard %}
+                {% if leaderboard_row.score != 0 %}
                 <tr class="{% if leaderboard_row.username == user.username %}table-success{% endif %}">
                     <th scope="row" {% if leaderboard_row.username == user.username %}style="color: #1f2a24!important; font-weight: bold;"{% endif %}>{{ leaderboard_row.rank }}</th>
                     <td {% if leaderboard_row.username == user.username %}style="color: #1f2a24!important; font-weight: bold;"{% endif %}>{{ leaderboard_row.username }}</td>
@@ -34,6 +35,7 @@
                         <a href="{% url 'apps_user_profile' leaderboard_row.user_id %}" class="btn btn-primary btn-sm"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 20px"></i> View Profile</a>
                     </td>
                 </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>

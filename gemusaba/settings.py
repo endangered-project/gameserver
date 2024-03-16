@@ -152,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -346,15 +346,6 @@ if config('ENABLE_SENTRY', cast=bool, default=False):
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool, default=False)
 CORS_TRUSTED_ORIGINS = config('CORS_TRUSTED_ORIGINS', cast=Csv(), default='')
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='')
-CORS_ALLOW_HEADERS = (
-    *default_headers,
-    "x-client-id",
-    "x-client-secret",
-    "x-session-token",
-    # Sentry frontend
-    "baggage",
-    "sentry-trace"
-)
 
 
 # Django REST Framework configuration

@@ -1,4 +1,3 @@
-import json
 import logging
 
 from django.utils import timezone
@@ -8,7 +7,7 @@ from rest_framework.response import Response
 from apis.serializers import AnswerQuestionSerializer
 from apps.models import Game, GameQuestion, QuestionHistory, QuestionCategory, GameMode
 from apps.question import generate_question, FailedToGenerateQuestion
-from apps.utils import create_total_weight_with_game, calculate_total_score
+from apps.utils import create_total_weight_with_game, calculate_total_score, generate_leaderboard, get_user_rank
 from users.models import Profile
 
 logger = logging.getLogger(__name__)
@@ -166,10 +165,13 @@ def answer_question(request):
             game.save()
             # Check for end game
             if game.has_lose():
+                game.rank_before = get_user_rank(game.user.id)
                 game.finished = True
                 game.completed = True
                 game.end_time = timezone.now()
-            game.save()
+                game.save()
+                game.rank_after = get_user_rank(game.user.id)
+                game.save()
             if is_true:
                 return Response({
                     'message': "Right answer",
@@ -207,4 +209,43 @@ def get_user_info(request):
     return Response({
         'username': request.user.username,
         'profile_picture': profile.get_full_avatar_url()
+    })
+
+
+@api_view(['GET'])
+def get_leaderboard(request):
+    """
+    Get leaderboard of latest 5 users
+    """
+    generated_leaderboard = generate_leaderboard()
+    leaderboard = []
+    for row in generated_leaderboard:
+        leaderboard.append({
+            'username': row['username'],
+            'score': row['score'],
+            'rank': row['rank']
+        })
+    response = {}
+    # Will return in dict in {'username1': 'username', 'score1': 'score', 'username2': 'username',...} format
+    for i, row in enumerate(leaderboard):
+        response[f'username{i+1}'] = row['username']
+        response[f'score{i+1}'] = row['score']
+    return Response(response)
+
+
+@api_view(['GET'])
+def get_play_history(request, game_id):
+    """
+    Get play history
+    """
+    try:
+        game = Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        return Response({
+            'message': 'Game not found'
+        }, status=404)
+    return Response({
+        'score': game.score,
+        'rank_before': game.rank_before,
+        'rank_after': game.rank_after
     })

@@ -16,9 +16,10 @@
     <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Play History</h1>
     <a href="{% url 'apps_user_profile' game.user.id %}" class="btn btn-primary"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 20px"></i> User Profile</a>
     <p></p>
-    <p>Game ID: {{ game.id }}</p>
+    <p>Session ID: {{ game.id }}</p>
     <p>Player: <a href="{% url 'apps_user_profile' game.user.id %}">{{ game.user.username }}</a></p>
     <p>Score: {{ game.score }}</p>
+    <p>Rank changed : {{ game.rank_before }} <i class="mdi mdi-arrow-right" aria-hidden="true" style="font-size: 20px;"></i> {{ game.rank_after }}</p>
     <h2>Question</h2>
     {% for question in question_list %}
     <div style="padding-top: 1rem; padding-bottom: 1rem;">

@@ -88,7 +88,8 @@ def generate_leaderboard():
     for user in User.objects.all():
         leaderboard[user.username] = 0
         for game in Game.objects.filter(user=user, finished=True, completed=True):
-            leaderboard[user.username] += game.score
+            if game.score > leaderboard[user.username]:
+                leaderboard[user.username] = game.score
     leaderboard = dict(sorted(leaderboard.items(), key=lambda item: item[1], reverse=True))
     leaderboard = [{"username": k, "score": v, "rank": i + 1, "user_id": User.objects.get(username=k).id} for i, (k, v) in enumerate(leaderboard.items())]
     return leaderboard

@@ -15,4 +15,7 @@ urlpatterns = [
     path("game/answer", answer_question, name="api_answer_question"),
 
     path("user", get_user_info, name="api_get_user_info"),
+
+    path("leaderboard", get_leaderboard, name="api_get_leaderboard"),
+    path("history/<int:game_id>", get_play_history, name="api_get_play_history"),
 ]

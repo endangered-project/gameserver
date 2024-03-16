@@ -86,6 +86,8 @@ class Game(models.Model):
     weight = models.JSONField(default=dict)
     finished = models.BooleanField(default=False)
     completed = models.BooleanField(default=False)
+    rank_before = models.IntegerField(default=0)
+    rank_after = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.username + ' - ' + str(self.start_time)
