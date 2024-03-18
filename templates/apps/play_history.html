@@ -23,18 +23,42 @@
     <h2>Question</h2>
     {% for question in question_list %}
     <div style="padding-top: 1rem; padding-bottom: 1rem;">
-        <p>{% if question.is_true %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i>{% else %}<i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i>{% endif %} {{ question.question }}</p>
+        <p>{% if question.is_true %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i>{% else %}<i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i>{% endif %} ({{ question.full_json.game_mode.name }}) {{ question.question }}</p>
         {% if question.type == 'image' %}
             <div class="row">
                 {% for choice in question.choices %}
                 <div class="col-md-3">
-                    <img src="{{ choice }}" style="max-width: 100%; max-height: 100%;">
+                    <img src="{{ choice }}" style="max-width: 100%; max-height: 100%;" class="
+                    {% if question.is_true %}
+                    {% if question.selected == choice %}
+                    border border-success border-5
+                    {% endif %}
+                    {% else %}
+                    {% if question.selected == choice %}
+                    border border-danger border-5
+                    {% elif question.answer == choice %}
+                    border border-success border-5
+                    {% endif %}
+                    {% endif %}
+                    " />
                 </div>
                 {% endfor %}
             </div>
         {% else %}
             {% for choice in question.choices %}
-                <p>{{ choice }}</p>
+                <p class="
+                    {% if question.is_true %}
+                    {% if question.selected == choice %}
+                    border border-success border-5
+                    {% endif %}
+                    {% else %}
+                    {% if question.selected == choice %}
+                    border border-danger border-5
+                    {% elif question.answer == choice %}
+                    border border-success border-5
+                    {% endif %}
+                    {% endif %}
+                    ">{{ choice }}</p>
             {% endfor %}
         {% endif %}
         

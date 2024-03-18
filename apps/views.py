@@ -413,9 +413,11 @@ def play_history(request, game_id):
             'question': question.question.question,
             'choices': json.loads(question.question.choice.replace("'", '"')),
             'answer': question.question.answer,
+            'selected': question.selected,
             'answered': question.answered,
             'is_true': question.is_true,
-            'type': question.question.type
+            'type': question.question.type,
+            'full_json': question.question.full_json
         })
     return render(request, 'apps/play_history.html', {
         'game': game,
