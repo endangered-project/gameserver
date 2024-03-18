@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from apis.serializers import AnswerQuestionSerializer
-from apps.models import Game, GameQuestion, QuestionHistory, QuestionCategory, GameMode
+from apps.models import Game, GameQuestion, QuestionHistory, QuestionCategory, GameMode, UserCategoryWeight
 from apps.question import generate_question, FailedToGenerateQuestion
 from apps.utils import create_total_weight_with_game, calculate_total_score, generate_leaderboard, get_user_rank
 from users.models import Profile
@@ -165,6 +165,14 @@ def answer_question(request):
             game.save()
             # Check for end game
             if game.has_lose():
+                for k, v in game.weight.items():
+                    category = QuestionCategory.objects.get(id=k)
+                    try:
+                        weight = UserCategoryWeight.objects.get(user=request.user, category=category)
+                    except UserCategoryWeight.DoesNotExist:
+                        weight = UserCategoryWeight.objects.create(user=request.user, category=category, weight=v)
+                    weight.weight = v
+                    weight.save()
                 game.rank_before = get_user_rank(game.user.id)
                 game.finished = True
                 game.completed = True
@@ -190,6 +198,49 @@ def answer_question(request):
             }, status=400)
     except Exception as e:
         logger.error(f'Error when answering question for user {request.user} with error: {str(e)}')
+        logger.exception(e)
+        return Response({
+            'message': 'Internal server error'
+        }, status=500)
+
+
+@api_view(['POST'])
+def end_game(request):
+    """
+    End a game for user
+    :param request:
+    :return:
+    """
+    if not request.user.is_authenticated:
+        return Response({
+            'message': 'User is not authenticated'
+        }, status=401)
+    try:
+        game = Game.objects.filter(user=request.user, finished=False).first()
+        if not game:
+            return Response({
+                'message': 'No game is running'
+            }, status=400)
+        for k, v in game.weight.items():
+            category = QuestionCategory.objects.get(id=k)
+            try:
+                weight = UserCategoryWeight.objects.get(user=request.user, category=category)
+            except UserCategoryWeight.DoesNotExist:
+                weight = UserCategoryWeight.objects.create(user=request.user, category=category, weight=v)
+            weight.weight = v
+            weight.save()
+        game.end_time = timezone.now()
+        game.rank_before = get_user_rank(game.user.id)
+        game.finished = True
+        game.completed = True
+        game.save()
+        game.rank_after = get_user_rank(game.user.id)
+        game.save()
+        return Response({
+            'message': 'Game ended successfully'
+        })
+    except Exception as e:
+        logger.error(f'Error when ending game for user {request.user} with error: {str(e)}')
         logger.exception(e)
         return Response({
             'message': 'Internal server error'

@@ -13,6 +13,7 @@ urlpatterns = [
     path("game/start", start_new_game, name="api_start_new_game"),
     path("game/question", get_new_question, name="api_get_new_question"),
     path("game/answer", answer_question, name="api_answer_question"),
+    path("game/end", end_game, name="api_end_game"),
 
     path("user", get_user_info, name="api_get_user_info"),
 
