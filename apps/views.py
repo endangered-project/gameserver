@@ -421,5 +421,7 @@ def play_history(request, game_id):
         })
     return render(request, 'apps/play_history.html', {
         'game': game,
-        'question_list': question_history_list
+        'question_list': question_history_list,
+        'right': GameQuestion.objects.filter(game=game, answered=True, is_true=True).count(),
+        'wrong': GameQuestion.objects.filter(game=game, answered=True, is_true=False).count()
     })

@@ -19,10 +19,12 @@
     <p>Session ID: {{ game.id }}</p>
     <p>Player: <a href="{% url 'apps_user_profile' game.user.id %}">{{ game.user.username }}</a></p>
     <p>Score: {{ game.score }}</p>
-    <p>Rank changed : {{ game.rank_before }} <i class="mdi mdi-arrow-right" aria-hidden="true" style="font-size: 20px;"></i> {{ game.rank_after }}</p>
+    <p><i class="mdi mdi-trophy" aria-hidden="true" style="font-size: 20px; color: gold;"></i> Rank changed : {{ game.rank_before }} <i class="mdi mdi-arrow-right" aria-hidden="true" style="font-size: 20px;"></i> {{ game.rank_after }}</p>
+    <p><i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i> Right : {{ right }}</p>
+    <p><i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i> Wrong : {{ wrong }}</p>
     <h2>Question</h2>
     {% for question in question_list %}
-    <div style="padding-top: 1rem; padding-bottom: 1rem;">
+    <div style="padding: 1rem; margin-bottom: 1rem; border: 4px solid darkgray; border-radius: 5px;">
         <p>{% if question.is_true %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i>{% else %}<i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i>{% endif %} ({{ question.full_json.game_mode.name }}) {{ question.question }}</p>
         {% if question.type == 'image' %}
             <div class="row">
@@ -58,10 +60,9 @@
                     border border-success border-5
                     {% endif %}
                     {% endif %}
-                    ">{{ choice }}</p>
+                    ">&bull; {{ choice }}</p>
             {% endfor %}
         {% endif %}
-        
     </div>
     {% endfor %}
 {% endblock %}
