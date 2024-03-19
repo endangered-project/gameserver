@@ -18,6 +18,7 @@ KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL')
 class FailedToGenerateQuestion(Exception):
     pass
 
+
 def get_all_question_mode():
     all_question_mode = []
     if QuestionModel.objects.all().exists():
@@ -74,9 +75,9 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
             if weight < 5.0:
                 difficulty_level = "easy"
             elif weight < 10.0:
-                difficulty_level = "medium"
+                difficulty_level = random.choice(["easy", "medium"])
             else:
-                difficulty_level = "hard"
+                difficulty_level = random.choice(["easy", "medium", "hard"])
 
             # random between seed_question, text_custom_question, and image_custom_question
             if question_mode:
