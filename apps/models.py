@@ -113,19 +113,19 @@ class QuestionHistory(models.Model):
 
     def get_right_weight(self):
         if self.difficulty_level == 'easy':
-            return 0.5
+            return 0.25
         elif self.difficulty_level == 'medium':
-            return 1
+            return 0.5
         else:
-            return 2
+            return 1
 
     def get_wrong_weight(self):
         if self.difficulty_level == 'easy':
-            return -0.25
-        elif self.difficulty_level == 'medium':
             return -0.5
+        elif self.difficulty_level == 'medium':
+            return -1
         else:
-            return 1
+            return -2
 
 
 class GameQuestion(models.Model):
