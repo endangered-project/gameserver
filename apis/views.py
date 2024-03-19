@@ -298,5 +298,7 @@ def get_play_history(request, game_id):
     return Response({
         'score': game.score,
         'rank_before': game.rank_before,
-        'rank_after': game.rank_after
+        'rank_after': game.rank_after,
+        'right': GameQuestion.objects.filter(game=game, answered=True, is_true=True).count(),
+        'wrong': GameQuestion.objects.filter(game=game, answered=True, is_true=False).count()
     })
