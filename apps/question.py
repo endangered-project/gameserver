@@ -18,8 +18,15 @@ KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL')
 class FailedToGenerateQuestion(Exception):
     pass
 
-
-QUESTION_MODE = ['seed_question', 'text_custom_question', 'image_custom_question']
+def get_all_question_mode():
+    all_question_mode = []
+    if QuestionModel.objects.all().exists():
+        all_question_mode.append("seed_question")
+    if TextCustomQuestion.objects.all().exists():
+        all_question_mode.append("text_custom_question")
+    if ImageCustomQuestion.objects.all().exists():
+        all_question_mode.append("image_custom_question")
+    return all_question_mode
 
 
 def generate_question(choices: int = 4, try_count: int = 100, specific_question_id: int = None, target_user: User = None, question_mode: str = None, custom_weight: dict = None):
@@ -73,11 +80,15 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
 
             # random between seed_question, text_custom_question, and image_custom_question
             if question_mode:
-                if question_mode not in QUESTION_MODE:
+                if question_mode not in get_all_question_mode():
                     raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question_mode} is not allowed")
                 question_mode = question_mode
             else:
-                question_mode = random.choice(QUESTION_MODE)
+                all_question_mode = get_all_question_mode()
+                if all_question_mode:
+                    question_mode = random.choice(all_question_mode)
+                else:
+                    raise FailedToGenerateQuestion("No question mode found")
 
             # random one question
             if question_mode == "seed_question":
