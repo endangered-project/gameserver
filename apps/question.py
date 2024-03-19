@@ -69,8 +69,8 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
                 except KeyError:
                     weight = 0.0
             else:
-                # random 1-10 float
-                weight = random.uniform(0.0, 10.0)
+                # random 1-12 float (12 to make sure that hard question is allowed)
+                weight = random.uniform(0.0, 12.0)
 
             if weight < 5.0:
                 difficulty_level = "easy"
