@@ -95,7 +95,7 @@ def generate_leaderboard():
     return leaderboard
 
 
-def get_user_rank(user_id):
+def get_user_rank(user_id) -> int:
     """
     Get user's rank
     :param user_id: User ID
@@ -108,7 +108,7 @@ def get_user_rank(user_id):
     return 0
 
 
-def get_user_highscore(user_id):
+def get_user_highscore(user_id) -> int:
     """
     Get user's highscore
     :param user_id: User ID

@@ -28,6 +28,7 @@ class QuestionModel(models.Model):
     answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
     difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.question
@@ -41,6 +42,7 @@ class QuestionModel(models.Model):
 class GameMode(models.Model):
     name = models.CharField(max_length=100)
     allow_answer_mode = models.CharField(max_length=100, choices=ANSWER_MODE_CHOICES)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -61,6 +63,7 @@ class TextCustomQuestion(models.Model):
     answer = models.TextField()
     difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.question
@@ -72,6 +75,7 @@ class ImageCustomQuestion(models.Model):
     answer = models.TextField()
     difficulty_level = models.CharField(max_length=100, choices=DIFFICULTY_LEVEL_CHOICES)
     category = models.ForeignKey(QuestionCategory, on_delete=models.SET_NULL, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.question
@@ -135,6 +139,7 @@ class GameQuestion(models.Model):
     selected = models.TextField(blank=True, null=True)
     is_true = models.BooleanField(default=False)
     answered = models.BooleanField(default=False)
+    duration = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.game.user.username + ' - ' + self.question.question + ' - ' + self.game_mode.name

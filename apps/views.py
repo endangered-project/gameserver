@@ -100,6 +100,20 @@ def question_edit(request, question_id):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
+def question_toggle_active(request, question_id):
+    try:
+        question = QuestionModel.objects.get(pk=question_id)
+    except QuestionModel.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_question_list')
+    question.active = not question.active
+    question.save()
+    messages.success(request, 'Question active status updated successfully')
+    return redirect('apps_question_list')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def game_mode_list(request):
     return render(request, 'apps/game_mode/list.html', {
         'game_modes': GameMode.objects.all()
@@ -285,6 +299,34 @@ def text_custom_question_edit(request, question_id):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
+def text_custom_question_toggle_active(request, question_id):
+    try:
+        question = TextCustomQuestion.objects.get(pk=question_id)
+    except TextCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_text_custom_question_list')
+    question.active = not question.active
+    question.save()
+    messages.success(request, 'Question active status updated successfully')
+    return redirect('apps_text_custom_question_list')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def text_custom_question_view(request, question_id):
+    try:
+        question = TextCustomQuestion.objects.get(pk=question_id)
+    except ImageCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_text_custom_question_list')
+    return render(request, 'apps/text_custom_question/view.html', {
+        'question': question,
+        'choice_list': json.loads(question.choices.replace("'", '"'))
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def image_custom_question_list(request):
     return render(request, 'apps/image_custom_question/list.html', {
         'questions': ImageCustomQuestion.objects.all()
@@ -360,7 +402,22 @@ def image_custom_question_edit(request, question_id):
     })
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def image_custom_question_toggle_active(request, question_id):
+    try:
+        question = ImageCustomQuestion.objects.get(pk=question_id)
+    except ImageCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_image_custom_question_list')
+    question.active = not question.active
+    question.save()
+    messages.success(request, 'Question active status updated successfully')
+    return redirect('apps_image_custom_question_list')
+
+
 # TODO: Add breadcrumb navigation
+
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)

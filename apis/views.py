@@ -151,12 +151,14 @@ def answer_question(request):
                 question.is_true = True
                 question.answered = True
                 question.selected = payload.data['answer']
+                question.duration = payload.data['duration']
                 question.save()
                 is_true = True
             else:
                 question.is_true = False
                 question.answered = True
                 question.selected = payload.data['answer']
+                question.duration = payload.data['duration']
                 question.save()
                 is_true = False
             # Calculate all weight and score of this game
