@@ -1,0 +1,33 @@
+{% extends "apps/base.html" %}
+
+{% block title %}View Text Custom Question{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        View Text Custom Question
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">View Text Custom Question</h1>
+    <a href="{% url 'apps_text_custom_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+    <p></p>
+    <h2>Question</h2>
+    <p>{{ question.question }}</p>
+    <h2>Category</h2>
+    <p>{{ question.category }}</p>
+    <h2>Choices</h2>
+    <ul>
+        {% for choice in choice_list %}
+        <li class="{% if choice in question.answer %}text-success{% endif %}">{{ choice }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
