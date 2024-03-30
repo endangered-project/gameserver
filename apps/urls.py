@@ -13,6 +13,7 @@ urlpatterns = [
     path('question_category/<int:category_id>/edit', question_category_edit, name='apps_question_category_edit'),
     path('text_custom_question', text_custom_question_list, name='apps_text_custom_question_list'),
     path('text_custom_question/create', text_custom_question_create, name='apps_text_custom_question_create'),
+    path('text_custom_question/<int:question_id>', text_custom_question_view, name='apps_text_custom_question_view'),
     path('text_custom_question/<int:question_id>/edit', text_custom_question_edit, name='apps_text_custom_question_edit'),
     path('text_custom_question/<int:question_id>/toggle', text_custom_question_toggle_active, name='apps_text_custom_question_toggle_active'),
     path('image_custom_question', image_custom_question_list, name='apps_image_custom_question_list'),

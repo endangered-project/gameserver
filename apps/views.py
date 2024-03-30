@@ -313,6 +313,20 @@ def text_custom_question_toggle_active(request, question_id):
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
+def text_custom_question_view(request, question_id):
+    try:
+        question = TextCustomQuestion.objects.get(pk=question_id)
+    except ImageCustomQuestion.DoesNotExist:
+        messages.error(request, 'Question not found')
+        return redirect('apps_text_custom_question_list')
+    return render(request, 'apps/text_custom_question/view.html', {
+        'question': question,
+        'choice_list': json.loads(question.choices.replace("'", '"'))
+    })
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def image_custom_question_list(request):
     return render(request, 'apps/image_custom_question/list.html', {
         'questions': ImageCustomQuestion.objects.all()
