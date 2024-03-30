@@ -135,6 +135,7 @@ class GameQuestion(models.Model):
     selected = models.TextField(blank=True, null=True)
     is_true = models.BooleanField(default=False)
     answered = models.BooleanField(default=False)
+    duration = models.FloatField(default=0.0)
 
     def __str__(self):
         return self.game.user.username + ' - ' + self.question.question + ' - ' + self.game_mode.name
