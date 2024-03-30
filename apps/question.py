@@ -99,7 +99,7 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
                     except QuestionModel.DoesNotExist:
                         raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
                 else:
-                    all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level)
+                    all_question = QuestionModel.objects.filter(category=category, difficulty_level=difficulty_level, active=True)
                     question = random.choice(all_question)
             elif question_mode == "text_custom_question":
                 if specific_question_id:
@@ -108,7 +108,7 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
                     except TextCustomQuestion.DoesNotExist:
                         raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
                 else:
-                    all_question = TextCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level)
+                    all_question = TextCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level, active=True)
                     question = random.choice(all_question)
             elif question_mode == "image_custom_question":
                 if specific_question_id:
@@ -117,7 +117,7 @@ def generate_question(choices: int = 4, try_count: int = 100, specific_question_
                     except ImageCustomQuestion.DoesNotExist:
                         raise FailedToGenerateQuestion(f"Failed to generate question, question with ID {specific_question_id} not found")
                 else:
-                    all_question = ImageCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level)
+                    all_question = ImageCustomQuestion.objects.filter(category=category, difficulty_level=difficulty_level, active=True)
                     question = random.choice(all_question)
             else:
                 raise FailedToGenerateQuestion(f"Failed to generate question, question mode {question_mode} not found")
