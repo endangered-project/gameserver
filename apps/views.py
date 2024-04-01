@@ -471,6 +471,7 @@ def play_history(request, game_id):
     for question in GameQuestion.objects.filter(game=game, answered=True).order_by('id'):
         question_history_list.append({
             'question': question.question.question,
+            'question_mode': question.question.question_mode,
             'choices': json.loads(question.question.choice.replace("'", '"')),
             'answer': question.question.answer,
             'selected': question.selected,
@@ -483,5 +484,6 @@ def play_history(request, game_id):
         'game': game,
         'question_list': question_history_list,
         'right': GameQuestion.objects.filter(game=game, answered=True, is_true=True).count(),
-        'wrong': GameQuestion.objects.filter(game=game, answered=True, is_true=False).count()
+        'wrong': GameQuestion.objects.filter(game=game, answered=True, is_true=False).count(),
+        'knowledge_base_url': KNOWLEDGE_BASE_URL
     })

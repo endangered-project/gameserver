@@ -27,6 +27,9 @@
     {% for question in question_list %}
     <div style="padding: 1rem; margin-bottom: 1rem; border: 4px solid darkgray; border-radius: 5px;">
         <p>{% if question.is_true %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px; color: green;"></i>{% else %}<i class="mdi mdi-close" aria-hidden="true" style="font-size: 20px; color: red;"></i>{% endif %} ({{ question.full_json.game_mode.name }}) {{ question.question }}</p>
+        {% if question.question_mode == 'seed_question' %}
+            <a class="btn btn-secondary btn-sm mb-3" href="{{ knowledge_base_url }}/instance/{{ question.full_json.question.question_model_instance }}/wiki" target="_blank"><i class="mdi mdi-open-in-new" aria-hidden="true" style="font-size: 20px;"></i> View in Knowledge Base</a>
+        {% endif %}
         {% if question.type == 'image' %}
             <div class="row">
                 {% for choice in question.choices %}
