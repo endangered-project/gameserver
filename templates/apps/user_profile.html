@@ -1,6 +1,6 @@
 {% extends "apps/base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}{{ user_obj.username }}'s Profile{% endblock %}
 
 {% block styles %}
 
@@ -8,18 +8,13 @@
 
 {% block header %}
     <p class="header-title">
-        Home
+        {{ user_obj.username }}'s Profile
     </p>
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Welcome, {{ user.username }}!</h1>
-    {% else %}
-        <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Welcome!</h1>
-    {% endif %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">{{ user_obj.username }}'s Profile</h1>
     <p></p>
-    {% if user.is_authenticated %}
     <div class="row mb-3">
         <div class="col-md-4">
             <div class="element-card-wrapper">
@@ -52,7 +47,25 @@
             </div>
         </div>
     </div>
-    {% endif %}
+    <h2 style="padding-top: 1rem; padding-bottom: 1rem;">History</h2>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Finish Time</th>
+                <th scope="col">Score</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history_object in history %}
+                <tr>
+                    <td>{{ history_object.end_time }}</td>
+                    <td>{{ history_object.score }}</td>
+                    <td><a href="{% url 'apps_play_history' history_object.id %}" class="btn btn-sm btn-primary"><i class="mdi mdi-eye" aria-hidden="true" style="font-size: 20px"></i> View</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 
 {% block scripts %}

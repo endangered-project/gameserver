@@ -1,6 +1,9 @@
 from PIL import Image
+from decouple import config
 from django.contrib.auth.models import User
 from django.db import models
+
+CURRENT_URL = config('CURRENT_URL')
 
 
 class Profile(models.Model):
@@ -25,3 +28,6 @@ class Profile(models.Model):
             output_size = (500, 500)
             image.thumbnail(output_size)
             image.save(self.avatar.path)
+
+    def get_full_avatar_url(self):
+        return CURRENT_URL + self.avatar.url

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import sentry_sdk
@@ -151,7 +152,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -187,7 +188,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool, default=False)
 
-SESSION_COOKIE_AGE = 86400  # Set the session cookie age to only 1 day (in seconds)
+SESSION_COOKIE_AGE = 8640000  # Set the session cookie age to only 1 day (in seconds)
 
 # Logging
 # https://docs.djangoproject.com/en/5.0/topics/logging/
@@ -345,12 +346,27 @@ if config('ENABLE_SENTRY', cast=bool, default=False):
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool, default=False)
 CORS_TRUSTED_ORIGINS = config('CORS_TRUSTED_ORIGINS', cast=Csv(), default='')
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='')
-CORS_ALLOW_HEADERS = (
-    *default_headers,
-    "x-client-id",
-    "x-client-secret",
-    "x-session-token",
-    # Sentry frontend
-    "baggage",
-    "sentry-trace"
-)
+
+
+# Django REST Framework configuration
+# https://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30)
+}

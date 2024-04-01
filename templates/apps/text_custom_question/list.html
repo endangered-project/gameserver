@@ -1,6 +1,6 @@
 {% extends "apps/base.html" %}
 
-{% block title %}Knowledge Base Question List{% endblock %}
+{% block title %}Text Custom Question List{% endblock %}
 
 {% block styles %}
 
@@ -8,13 +8,13 @@
 
 {% block header %}
     <p class="header-title">
-        Knowledge Base Question List
+        Text Custom Question List
     </p>
 {% endblock %}
 
 {% block content %}
-    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Knowledge Base Question List</h1>
-    <a href="{% url 'apps_question_create' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Create</a>
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Text Custom Question List</h1>
+    <a href="{% url 'apps_text_custom_question_create' %}" class="btn btn-primary"><i class="mdi mdi-plus" aria-hidden="true" style="font-size: 20px"></i> Create</a>
     <a href="{% url 'apps_question_generator_test' %}" class="btn btn-primary"><i class="mdi mdi-flask" aria-hidden="true" style="font-size: 20px"></i> Test</a>
     <p></p>
     <table class="table table-hover">
@@ -22,7 +22,6 @@
             <tr>
                 <th>ID</th>
                 <th>Question</th>
-                <th>Answer mode</th>
                 <th>Difficulty</th>
                 <th>Category</th>
                 <th>Active</th>
@@ -34,13 +33,13 @@
             <tr>
                 <td scope="row">{{ question.id }}</td>
                 <td>{{ question.question }}</td>
-                <td>{{ question.answer_mode }}</td>
                 <td>{{ question.difficulty_level }}</td>
                 <td>{{ question.category }}</td>
                 <td>{% if question.active %}<i class="mdi mdi-check" aria-hidden="true" style="font-size: 20px"></i>{% else %}<i class="mdi mdi-block-helper" aria-hidden="true" style="font-size: 20px"></i>{% endif %}</td>
                 <td>
-                    <a href="{% url 'apps_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
-                    <a href="{% url 'apps_question_toggle_active' question.id %}" class="{% if question.active %}btn btn-sm btn-danger{% else %}btn btn-sm btn-success{% endif %}">
+                    <a href="{% url 'apps_text_custom_question_view' question.id %}" class="btn btn-primary"><i class="mdi mdi-eye" aria-hidden="true" style="font-size: 20px"></i> View</a>
+                    <a href="{% url 'apps_text_custom_question_edit' question.id %}" class="btn btn-primary"><i class="mdi mdi-pencil" aria-hidden="true" style="font-size: 20px"></i> Edit</a>
+                    <a href="{% url 'apps_text_custom_question_toggle_active' question.id %}" class="{% if not question.active %}btn btn-sm btn-danger{% else %}btn btn-sm btn-success{% endif %}">
                         {% if question.active %}
                             <i class="mdi mdi-block-helper" aria-hidden="true" style="font-size: 20px"></i> Disable
                         {% else %}

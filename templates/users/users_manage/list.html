@@ -1,0 +1,43 @@
+{% extends "apps/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Users Management{% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+
+{% block header %}
+    <p class="header-title">
+        Users Management
+    </p>
+{% endblock %}
+
+{% block content %}
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">Users Management</h1>
+    <p></p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <th scope="row">{{ user.id }}</th>
+                    <td>{{ user.username }} {% if user.is_staff %} <span class="badge text-bg-secondary">Admin</span> {% endif %}</td>
+                    <td>
+                        <a href="{% url 'users_management_detail' user.id %}" class="btn btn-sm btn-primary"><i class="mdi mdi-card-account-details" aria-hidden="true" style="font-size: 20px"></i> Detail</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

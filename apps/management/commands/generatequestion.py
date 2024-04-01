@@ -6,7 +6,7 @@ from apps.question import generate_question
 
 
 class Command(BaseCommand):
-    help = 'Disconnect user from channel layer if subscription is expired'
+    help = 'Generate a random question'
 
     def handle(self, *args, **options):
         question = generate_question()

@@ -55,12 +55,17 @@
                 <div>
                     <div class="list-group list-group-flush">
                         <a href="{% url 'apps_home' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-home" aria-hidden="true" style="font-size: 14px"></i> Home</a>
+                        <a href="{% url 'apps_leaderboard' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-trophy" aria-hidden="true" style="font-size: 14px"></i> Leaderboard</a>
                     </div>
+                    <p></p>
                     {% if user.is_staff %}
                     <p></p>
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'apps_question_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-comment-question" aria-hidden="true" style="font-size: 14px"></i> Question</a>
-                        <a href="{% url 'apps_game_mode_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-controller" aria-hidden="true" style="font-size: 14px"></i> Game Mode</a>
+                        <a href="{% url 'apps_question_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-comment-question" aria-hidden="true" style="font-size: 14px"></i> Knowledge Base Question</a>
+                        <a href="{% url 'apps_text_custom_question_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-chat-question" aria-hidden="true" style="font-size: 14px"></i> Text Custom Question</a>
+                        <a href="{% url 'apps_image_custom_question_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-file-question" aria-hidden="true" style="font-size: 14px"></i> Image Custom Question</a>
+                        <a href="{% url 'apps_question_category_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-shape-plus" aria-hidden="true" style="font-size: 14px"></i> Question Category</a>
+                        <a href="{% url 'apps_game_mode_list' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-controller-classic" aria-hidden="true" style="font-size: 14px"></i> Game Mode</a>
                     </div>
                     {% endif %}
                 </div>
@@ -79,12 +84,16 @@
                     <div>
                         <div class="list-group list-group-flush">
                             <a href="{% url 'apps_home' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-home" aria-hidden="true" style="font-size: 14px"></i> Home</a>
+                            <a href="{% url 'apps_profile' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-account" aria-hidden="true" style="font-size: 14px"></i> Profile</a>
                         </div>
                         <p></p>
                         <div class="list-group list-group-flush">
-                            {% if user.is_superuser or user.is_staff %}
+                            {% if user.is_superuser %}
                                 <a href="{% url 'admin:index' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-shield-account" aria-hidden="true" style="font-size: 14px"></i> Admin</a>
-                                <a href="{% url 'users_manage' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-playlist-edit" aria-hidden="true" style="font-size: 14px"></i> Staff Management</a>
+                                <a href="{% url 'staff_manage' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-playlist-edit" aria-hidden="true" style="font-size: 14px"></i> Staff Management</a>
+                            {% endif %}
+                            {% if user.is_staff %}
+                                <a href="{% url 'users_management' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-account-group" aria-hidden="true" style="font-size: 14px"></i> Users Management</a>
                             {% endif %}
                             <a href="{% url 'users_settings' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-cog" aria-hidden="true" style="font-size: 14px"></i> Settings</a>
                             <a href="{% url 'logout' %}" role="button" class="list-group-item list-group-item-action"><i class="mdi mdi-logout" aria-hidden="true" style="font-size: 14px"></i> Logout</a>
