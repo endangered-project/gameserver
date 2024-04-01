@@ -464,6 +464,9 @@ def play_history(request, game_id):
     except Game.DoesNotExist:
         messages.error(request, 'Game not found')
         return redirect('apps_home')
+    if not (game.finished and game.completed):
+        messages.error(request, 'Game not found')
+        return redirect('apps_home')
     question_history_list = []
     for question in GameQuestion.objects.filter(game=game, answered=True).order_by('id'):
         question_history_list.append({
