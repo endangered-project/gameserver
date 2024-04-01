@@ -10,7 +10,7 @@ the knowledge base and the game client, and works with the game client to manage
 the server is easily configurable through its web interface, providing a way for authorized users to edit its settings.
 
 ### 📟 Technical Details
-The game server uses Django as its framework and PostgreSQL as its database.
+The game server uses Django as its framework and PostgreSQL as its database (on development use SQLite).
 
 The purpose of the server can be divided into two sections.
 #### 🎲 Game Session and Score Management
@@ -52,6 +52,12 @@ poetry install
 ```commandline
 poetry run python manage.py runserver
 ```
+
+Note : To run with knowledge base server, we recommend to run the game server on port 8001 by using the following command:
+```commandline
+poetry run python manage.py runserver 8001
+```
+The example environment file already config the knowledge base server to run on port 8000.
 
 ### 📊 Progression
 See [GitHub Project](https://github.com/orgs/endangered-project/projects/1/) ([or the old board](https://github.com/users/HelloYeew/projects/8/views/2)).
