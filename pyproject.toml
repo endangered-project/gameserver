@@ -20,8 +20,58 @@ drf-yasg = "^1.21.7"
 django-cors-headers = "^4.3.1"
 requests = "^2.31.0"
 djangorestframework-simplejwt = "^5.3.1"
+coverage = "^7.4.4"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+branch = true
+
+# omit uninteresting files
+omit = [
+    "*/migrations/*",
+    "*/models.py",
+    "gemusaba/*",
+    "*/templatetags/*",
+    "*/management/commands/*",
+    # all __init__.py files
+    "*/__init__.py",
+    # File related to API
+    "apps/seed_api.py"
+]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self\\.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc\\.)?abstractmethod",
+
+    # Default coverage.py one line ignored
+    "pragma: no cover",
+
+    # Some strings translation in Django model
+    "def __str__(self)",
+
+    # Except exceptions
+    "except Exception as e:"
+]
+
+ignore_errors = true
+
+[tool.coverage.html]
+directory = "coverage_html_report"

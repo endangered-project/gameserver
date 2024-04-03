@@ -14,7 +14,7 @@ def logout_and_redirect(request):
     return redirect('apps_home')
 
 
-def register(request):
+def register(request):  # pragma: no cover
     if request.method == 'POST':
         form = UserCreationForms(request.POST)
         if form.is_valid():
@@ -35,7 +35,7 @@ def settings(request):
 
 @login_required
 def profile_settings(request):
-    if request.method == 'POST':
+    if request.method == 'POST':  # pragma: no cover
         form = ProfileSettingsForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
