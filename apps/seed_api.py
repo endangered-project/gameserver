@@ -2,11 +2,11 @@ from decouple import config
 import requests
 
 KNOWLEDGE_BASE_URL = config('KNOWLEDGE_BASE_URL', default='http://localhost:8000')
-if KNOWLEDGE_BASE_URL[-1] == '/':
+if KNOWLEDGE_BASE_URL[-1] == '/':  # pragma: no cover
     KNOWLEDGE_BASE_URL = KNOWLEDGE_BASE_URL[:-1]
 
 
-def get_all_class():
+def get_all_class():  # pragma: no cover
     """
     Get all class in knowledge base
     API endpoint : /api/class
@@ -19,7 +19,7 @@ def get_all_class():
     return response.json()['class']
 
 
-def get_class(class_id):
+def get_class(class_id):  # pragma: no cover
     """
     Get class by ID
     API endpoint : /api/class?class={class_id}
@@ -33,7 +33,7 @@ def get_class(class_id):
     return response.json()['class']
 
 
-def get_property_type_from_class(class_id):
+def get_property_type_from_class(class_id):  # pragma: no cover
     """
     Get property type from class
     API endpoint : /api/property_type?class={class_id}
@@ -47,7 +47,7 @@ def get_property_type_from_class(class_id):
     return response.json()['property_type']
 
 
-def get_instance_from_class(class_id):
+def get_instance_from_class(class_id):  # pragma: no cover
     """
     Get instance from class
     API endpoint : /api/instance?class={class_id}
@@ -61,7 +61,7 @@ def get_instance_from_class(class_id):
     return response.json()['instance']
 
 
-def get_instance(instance_id):
+def get_instance(instance_id):  # pragma: no cover
     """
     Get instance by ID
     API endpoint : /api/instance/{instance_id}

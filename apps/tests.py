@@ -27,6 +27,27 @@ class BaseTestCase(TestCase):
         self.user.is_superuser = True
         self.user.save()
 
+    def generate_dummy_question(self):
+        question_category = QuestionCategory.objects.create(name="Dummy category")
+        for i in range(5):
+            ImageCustomQuestion.objects.create(
+                question="Dummy question",
+                choices=f'["{i}","{i + 1}","{i + 2}","{i + 3}"]',
+                answer=f'["{i}"]',
+                difficulty_level="easy",
+                category=question_category,
+                active=True
+            )
+            TextCustomQuestion.objects.create(
+                question="Dummy question",
+                choices=f'["{i}","{i + 1}","{i + 2}","{i + 3}"]',
+                answer=f'["{i}"]',
+                difficulty_level="easy",
+                category=question_category,
+                active=True
+            )
+        GameMode.objects.create(name="Dummy mode", allow_answer_mode="single_right")
+
 
 class TestQuestionGenerator(TestCase):
     def test_generate_question_custom_text_question(self):
@@ -170,3 +191,38 @@ class TestQuestionGeneratorWithUser(BaseTestCase):
         for i in range(5):
             response = self.client.get('/api/random_question')
             self.assertEqual(response.status_code, 400)
+
+
+class TestGenerateCommandUsingCommandLine(BaseTestCase):
+    def test_generate_command(self):
+        from django.core.management import call_command
+        self.generate_dummy_question()
+        call_command('generatequestion')
+
+
+class TestHomeView(BaseTestCase):
+    def test_home_view(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+
+
+class TestFrontend(BaseTestCase):
+    def test_frontend_view(self):
+        self.login()
+        self.generate_dummy_question()
+        response = self.client.get('/question')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/question_category')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/text_custom_question')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/image_custom_question')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/game_mode')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/question/generator_test')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/leaderboard')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/profile/1')
+        self.assertEqual(response.status_code, 200)
