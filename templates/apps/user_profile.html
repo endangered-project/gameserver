@@ -13,7 +13,12 @@
 {% endblock %}
 
 {% block content %}
-    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">{{ user_obj.username }}'s Profile</h1>
+    <h1 style="padding-top: 1rem; padding-bottom: 1rem;">
+        <div class="flex-row">
+            <img src="{{ user_obj.profile.get_full_avatar_url }}" style="width: 80px; height: 80px; border-radius: 50%; margin-right: 10px;">
+            {{ user_obj.username }}
+        </div>
+    </h1>
     <p></p>
     <div class="row mb-3">
         <div class="col-md-4">

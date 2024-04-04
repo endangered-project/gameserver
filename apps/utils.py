@@ -91,7 +91,7 @@ def generate_leaderboard():
             if game.score > leaderboard[user.username]:
                 leaderboard[user.username] = game.score
     leaderboard = dict(sorted(leaderboard.items(), key=lambda item: item[1], reverse=True))
-    leaderboard = [{"username": k, "score": v, "rank": i + 1, "user_id": User.objects.get(username=k).id} for i, (k, v) in enumerate(leaderboard.items())]
+    leaderboard = [{"username": k, "score": v, "rank": i + 1, "user_id": User.objects.get(username=k).id, "profile_picture": User.objects.get(username=k).profile.get_full_avatar_url()} for i, (k, v) in enumerate(leaderboard.items())]
     return leaderboard
 
 
