@@ -33,7 +33,7 @@ class QuestionModelForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Main class of knowledge base that will be used to render the question'
+        help_text='The class within the knowledge base that will be used for this question.'
     )
     question = forms.CharField(
         label='Question',
@@ -43,7 +43,7 @@ class QuestionModelForm(forms.Form):
             }
         ),
         max_length=1000,
-        help_text='Question template that will be rendered, use {property_name} to use the property'
+        help_text='The question text that will be shown. Must include {property_name} to act as the question property.'
     )
     answer_property_id = forms.CharField(
         label='Answer Property',
@@ -52,7 +52,7 @@ class QuestionModelForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Property that will be used to render the choices in the question'
+        help_text='The property that will be used as the answer to this question.'
     )
     answer_mode = forms.CharField(
         label='Answer Mode',
@@ -62,7 +62,7 @@ class QuestionModelForm(forms.Form):
             },
             choices=ANSWER_MODE_CHOICES
         ),
-        help_text='Answer mode of this question, this will be used to render the choices',
+        help_text='This defines how the user must answer the question.',
         required=True
     )
     difficulty_level = forms.CharField(
@@ -77,7 +77,7 @@ class QuestionModelForm(forms.Form):
                 ('hard', 'Hard')
             ]
         ),
-        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question',
+        help_text='The difficulty of the question compared to others in the same category. This affects the question is selected based on a user\'s category score.',
         required=True
     )
     category = forms.ModelChoiceField(
@@ -88,7 +88,7 @@ class QuestionModelForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Category of this question, this will be used to measure the weight of the question on selecting the question'
+        help_text='The category of the question.'
     )
 
     class Meta:
@@ -121,11 +121,11 @@ class QuestionModelForm(forms.Form):
         all_property_in_question = [p.split('}')[0] for p in all_property_in_question if '}' in p]
         for p in all_property_in_question:
             if p not in all_property_name:
-                self.add_error('question', f'Property {p} is not exist in main class')
+                self.add_error('question', f'Property {p} does not exist in main class')
         # check answer property exist
         print(all_property_name)
         if answer_property_id not in all_property_id:
-            self.add_error('answer_property_id', 'Answer property is not exist')
+            self.add_error('answer_property_id', 'Answer property does not exist')
 
 
 class GameModeForm(forms.Form):
@@ -136,7 +136,7 @@ class GameModeForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Name of game mode',
+        help_text='The name of game mode.',
         required=True
     )
     allow_answer_mode = forms.CharField(
@@ -147,7 +147,7 @@ class GameModeForm(forms.Form):
             },
             choices=ANSWER_MODE_CHOICES
         ),
-        help_text='Answer mode that allowed in this game mode',
+        help_text='How the game mode is answered.',
         required=True
     )
 
@@ -164,7 +164,7 @@ class QuestionCategoryForm(forms.ModelForm):
                 'class': 'form-control'
             }
         ),
-        help_text='Name of the category'
+        help_text='The name of the category.'
     )
     description = forms.CharField(
         label='Description',
@@ -173,7 +173,7 @@ class QuestionCategoryForm(forms.ModelForm):
                 'class': 'form-control'
             }
         ),
-        help_text='Description of the category',
+        help_text='The description of the category.',
         required=False
     )
 
@@ -190,7 +190,7 @@ class TextCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Question of this custom question'
+        help_text='The question text of this custom question.'
     )
     choices = forms.CharField(
         label='Choices',
@@ -199,7 +199,7 @@ class TextCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Choices of this custom question in JSON list format, example: ["choice1", "choice2", "choice3", "choice4"]. Minimum 4 choices'
+        help_text='The available choices in JSON list format. For example: ["choice1", "choice2", "choice3", "choice4"]. A minimum of 4 choices are needed.'
     )
     answer = forms.CharField(
         label='Answer',
@@ -208,7 +208,7 @@ class TextCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Answer of this custom question in JSON list format, example: ["choice1"]. The answer must be exist in choices, also the minimum of choices that\'s right and wrong is 3'
+        help_text='The answer in JSON list format. For example: ["choice1"]. It must exist in the choices and the difference between correct and incorrect answers must be of at least 3.'
     )
     difficulty_level = forms.CharField(
         label='Difficulty Level',
@@ -222,7 +222,7 @@ class TextCustomQuestionForm(forms.Form):
                 ('hard', 'Hard')
             ]
         ),
-        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question'
+        help_text='The difficulty of the question compared to others in the same category. This affects the question is selected based on a user\'s category score.'
     )
     category = forms.ModelChoiceField(
         label='Category',
@@ -232,7 +232,7 @@ class TextCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Category of this custom question'
+        help_text='The category of this custom question.'
     )
 
     class Meta:
@@ -263,7 +263,7 @@ class TextCustomQuestionForm(forms.Form):
                 return
             # Check have choice more than 4
             if len(parsed_choices) < 4:
-                self.add_error('choices', 'Choices must have more than 4')
+                self.add_error('choices', 'Must have more than 4 choices in total')
                 return
             # Convert each choice to string
             parsed_choices = [str(c) for c in parsed_choices]
@@ -284,7 +284,7 @@ class TextCustomQuestionForm(forms.Form):
                 return
             # Check have answer more than 1
             if len(parsed_answer) < 1:
-                self.add_error('answer', 'Answer must have more than 1')
+                self.add_error('answer', 'Must have more than 1 answer')
                 return
             # Check answer exist in choices
             if not all(a in parsed_choices for a in parsed_answer):
@@ -292,7 +292,7 @@ class TextCustomQuestionForm(forms.Form):
                 return
             # Check all choice - answer is 3
             if len(parsed_choices) - len(parsed_answer) < 3:
-                self.add_error('answer', f'The minimum of choices that\'s right and wrong is 3 (choices: {len(parsed_choices)}, answer: {len(parsed_answer)})')
+                self.add_error('answer', f'The difference between correct and incorrect answers must be of at least 3 (choices: {len(parsed_choices)}, answer: {len(parsed_answer)})')
                 return
             # Convert each answer to string
             parsed_answer = [str(a) for a in parsed_answer]
@@ -311,7 +311,7 @@ class ImageCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Question of this custom question'
+        help_text='The question of this custom question.'
     )
     choices = MultipleFileField(
         label='Choices',
@@ -321,7 +321,7 @@ class ImageCustomQuestionForm(forms.Form):
             }
         ),
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
-        help_text='Choices of this custom question in image format, minimum 4 choices (jpg, jpeg, png)'
+        help_text='The choices of this custom question. A minimum 4 choices are needed. Supported image formats: jpg, jpeg, png'
     )
     answer = MultipleFileField(
         label='Answer',
@@ -331,7 +331,7 @@ class ImageCustomQuestionForm(forms.Form):
             }
         ),
         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])],
-        help_text='Answer of this custom question in image format (jpg, jpeg, png), The answer must be exist in choices, also the minimum of choices that\'s right and wrong is 3'
+        help_text='The answer of this custom question. It must exist in the choices and the difference between correct and incorrect answers must be of at least 3.'
     )
     difficulty_level = forms.CharField(
         label='Difficulty Level',
@@ -345,7 +345,7 @@ class ImageCustomQuestionForm(forms.Form):
                 ('hard', 'Hard')
             ]
         ),
-        help_text='Difficulty level of this question, this will be used with the score weight on rendering the question'
+        help_text='The difficulty of the question compared to others in the same category. This affects the question is selected based on a user\'s category score.'
     )
     category = forms.ModelChoiceField(
         label='Category',
@@ -355,7 +355,7 @@ class ImageCustomQuestionForm(forms.Form):
                 'class': 'form-control'
             }
         ),
-        help_text='Category of this custom question'
+        help_text='The category of this custom question.'
     )
 
     class Meta:
@@ -378,7 +378,7 @@ class ImageCustomQuestionForm(forms.Form):
         answer = self.files.getlist('answer')
         # Check have choice more than 4
         if len(choices) < 4:
-            self.add_error('choices', 'Choices must have more than 4')
+            self.add_error('choices', 'There must be more than 4 choices')
             return
         # Check duplicate choice
         if len(choices) != len(set(choices)):
@@ -398,6 +398,6 @@ class ImageCustomQuestionForm(forms.Form):
                 self.add_error('answer', f'Answer {a.name} not found in choices')
         # Check all choice - answer is 3
         if len(choices) - len(cleaned_data['answer_len']) < 3:
-            self.add_error('answer', 'The minimum of choices that\'s right and wrong is 3')
+            self.add_error('answer', 'The difference between correct and incorrect answers must be of at least 3')
             return
         return cleaned_data
